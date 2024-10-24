@@ -12,7 +12,7 @@ build: check
 	@yt build
 
 install: check
-	@cp build/bbc-microbit-classic-gcc/source/microbit-samples-combined.hex /media/$(USER)/MICROBIT/
+	@cp build/bbc-microbit-classic-gcc/source-srv/microbit-samples-combined.hex /media/$(USER)/MICROBIT/
 	@echo "Install done"
 
 clean: check
