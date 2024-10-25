@@ -33,19 +33,18 @@ class SerialServer:
 
     def run(self):
         while self.ser.isOpen() :
-             if (self.ser.inWaiting() > 0):
-                    data_str = self.ser.read(self.ser.inWaiting()) 
-                    #stocker data dans sqlite
-                    try:
-                        # Convertir les bytes en JSON
-                        json_data = json.loads(data_bytes.decode('utf-8'))
-                        print("Received data:", json_data)
+          data_str = self.ser.read_until(b"EOT\n");
+          #stocker data dans sqlite
+          try:
+              # Convertir les bytes en JSON
+              json_data = json.loads(data_bytes.decode('utf-8'))
+              print("Received data:", json_data)
 
-                        # Stocker les données dans la base de données
-                        self.store_data_in_db(json_data)
-                    except (json.JSONDecodeError, UnicodeDecodeError) as e:
-                        print("Error decoding JSON:", e)
-                    print(data_str)
+              # Stocker les données dans la base de données
+              self.store_data_in_db(json_data)
+          except (json.JSONDecodeError, UnicodeDecodeError) as e:
+              print("Error decoding JSON:", e)
+          print(data_str)
         
      def store_data_in_db(self, json_data):
         try:
@@ -70,7 +69,8 @@ class SerialServer:
                 
         except sqlite3.Error as e:
             print("Error storing data:", e)
-
+            
+            
     def close(self):
          self.ser.close()
            
