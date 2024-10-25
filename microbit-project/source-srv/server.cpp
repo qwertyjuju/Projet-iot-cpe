@@ -1,10 +1,9 @@
 #include "server.h"
+#include "RadioPacket.h"
 
-Server::Server(MicroBit *ubit):serialServer(ubit){
-    uBit = ubit;
-    //uBit->messageBus.listen(MICROBIT_ID_RADIO, MICROBIT_RADIO_EVT_DATAGRAM, onDataReceive);
-    uBit->messageBus.listen(MICROBIT_ID_BUTTON_A, MICROBIT_BUTTON_EVT_CLICK, this, &Server::receivePacket, MESSAGE_BUS_LISTENER_DROP_IF_BUSY);
+Server::Server(MicroBit *ubit):uBit(ubit),serialServer(ubit){
     uBit->radio.enable();
+    uBit->init();
     serialServer.sendString("initialisation serveur OK");
 }
 
@@ -14,13 +13,18 @@ Server::~Server(){
 
 void Server::run(){
     while(1){
-        uBit->display.print(1);
-        serialServer.sendString("UP!");
         uBit->sleep(1000);
     }
 }
 
-void Server::receivePacket(MicroBitEvent){
-    //uBit->display.scroll(2);
-    serialServer.sendString("RECEIVE");
+void Server::receivePacket(){
+    RadioPacket p (uBit->radio.datagram.recv());
+    if(p.getErrorCode()){
+        serialServer.sendString(p.getError());
+        serialServer.sendString(*p.getBuffer());
+        serialServer.sendString(p.getDataSize());
+    }
+    else{
+        serialServer.sendString(*p.getBuffer());
+    }
 }

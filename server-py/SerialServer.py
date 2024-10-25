@@ -30,10 +30,9 @@ class SerialServer:
 
     def run(self):
         while self.ser.isOpen() :
-             if (self.ser.inWaiting() > 0):
-                    data_str = self.ser.read(self.ser.inWaiting()) 
-                    # Store data HERE
-                    print(data_str)
+            data_str = self.ser.read_until(b"EOT\n");
+            # Store data HERE
+            print(data_str)
          
     def close(self):
          self.ser.close()
