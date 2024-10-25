@@ -1,4 +1,6 @@
 import serial 
+import sqlite3
+import json
 
 
 class SerialServer:
@@ -27,6 +29,21 @@ class SerialServer:
                 print("Serial {} port not available".format(port))
                 exit()
 
+    
+
+    def run2(self):
+        data = {
+            "opcode": 0,
+            "id_source": 1,
+            "data": {
+                "temperature": 25,
+                "luminosité": 20
+            }
+        }
+        # Convert JSON to a byte string
+        byte_string = json.dumps(data).encode('utf-8')
+        json_data = json.loads(byte_string.decode('utf-8'))
+        self.store_data_in_db(json_data)
     def sendUARTMessage(self, msg):
         self.ser.write(msg)
         print("Message <" + msg + "> sent to micro-controller." )
@@ -47,12 +64,12 @@ class SerialServer:
                         print("Error decoding JSON:", e)
                     print(data_str)
         
-     def store_data_in_db(self, json_data):
+    def store_data_in_db(self, json_data):
         try:
             # Extraire les informations spécifiques
             opcode = json_data.get("opcode")
             id_source = json_data.get("id_source")
-            data_capteur = json_data.get("data_capteur")
+            data_capteur = json_data.get("data")
 
             if opcode == 0:
                 if id_source:
@@ -66,7 +83,6 @@ class SerialServer:
                     print("Data successfully stored in database.")
                 else:
                     print("Some fields are missing in the received JSON data.")
-            else :
                 
         except sqlite3.Error as e:
             print("Error storing data:", e)

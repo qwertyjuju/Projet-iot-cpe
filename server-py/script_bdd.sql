@@ -3,9 +3,16 @@ CREATE TABLE Device (
     name TEXT
 );
 
-CREATE TABLE data (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,  
-    data TEXT NOT NULL,                    
-    device_id INTEGER NOT NULL,            
-    FOREIGN KEY (device_id) REFERENCES device(id) 
+CREATE TABLE Capteur (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT,
+    device_id INTEGER,  
+    FOREIGN KEY (device_id) REFERENCES Device(id)
 );
+
+CREATE TABLE Mesure (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,  
+    data TEXT NOT NULL,
+    capteur_id INTEGER, 
+    FOREIGN KEY (capteur_id) REFERENCES Capteur(id)
+)
