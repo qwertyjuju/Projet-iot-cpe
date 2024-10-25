@@ -6,7 +6,7 @@ class Server{
     public:
         Server(MicroBit *ubit);
         ~Server();
-        void receivePacket(MicroBitEvent e);
+        void receivePacket();
         void run();
         
     private:
