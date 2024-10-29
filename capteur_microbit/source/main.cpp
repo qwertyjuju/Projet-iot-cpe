@@ -1,0 +1,114 @@
+#include "MicroBit.h"
+#include "bme280.h"
+#include "ssd1306.h"
+#include "tsl256x.h"
+#include "veml6070.h"
+
+MicroBit uBit;
+MicroBitI2C i2c(I2C_SDA0,I2C_SCL0);
+MicroBitPin P0(MICROBIT_ID_IO_P0, MICROBIT_PIN_P0, PIN_CAPABILITY_DIGITAL_OUT);
+
+// Prototypes des fonctions
+void readSensors(bme280 &bme, tsl256x &tsl, veml6070 &veml, int &temp, int &pres, int &hum, uint32_t &lux, uint16_t &ir, uint16_t &comb, uint16_t &uv);
+void displayData(ssd1306 &screen, int temp, int hum, int pres, uint32_t lux, uint16_t ir, uint16_t uv);
+uint16_t generateChecksum(uint8_t *data, size_t length);
+
+
+int main()
+{
+    uBit.init();
+    uBit.radio.enable();
+
+    bme280 bme(&uBit,&i2c); // Température, Pression, Humidité
+    tsl256x tsl(&uBit,&i2c); // Lux, IR
+    veml6070 veml(&uBit,&i2c); // UV
+    ssd1306 screen(&uBit, &i2c, &P0); // Ecran oled
+
+    int temp = 0, pres = 0, hum = 0;
+    uint32_t lux = 0;
+    uint16_t ir = 0, uv = 0, comb = 0;
+
+    while(1)
+    {
+        readSensors(bme, tsl, veml, temp, pres, hum, lux, ir, comb, uv);
+        displayData(screen, temp, hum, pres, lux, ir, uv);
+        
+        // Créer la trame
+        uint8_t opcode = 0x01; 
+        uint16_t idSource = 0x01; 
+        uint16_t idDest = 65534;   
+        uint8_t data[12];         
+
+        // Remplir les données des capteurs dans le tableau
+        memcpy(&data[0], &temp, 4);
+        memcpy(&data[4], &pres, 4);
+        memcpy(&data[8], &hum, 4);
+
+        uint16_t dataLength = sizeof(data);
+        
+        uint16_t checksum = generateChecksum(data, dataLength);
+        
+        // Construire la trame
+        PacketBuffer buffer(9 + dataLength);  // 9 octets pour les champs fixes + dataLength
+
+        buffer[0] = opcode;                                  
+        memcpy(&buffer[1], &idSource, 2);                    
+        memcpy(&buffer[3], &idDest, 2);                      
+        memcpy(&buffer[5], &dataLength, 2);                  
+        memcpy(&buffer[7], &data[0], dataLength);           
+        memcpy(&buffer[7 + dataLength], &checksum, 2);  // Ajoute le checksum à la fin
+
+        // Envoyer la trame via radio
+        uBit.radio.datagram.send(buffer);
+
+        uBit.sleep(1000);
+    } 
+    release_fiber();
+}
+
+uint16_t generateChecksum(uint8_t *data, size_t length) {
+    uint16_t checksum = 0;
+
+    // Additionne chaque octet du tableau de données
+    for (size_t i = 0; i < length; i++) {
+        checksum += data[i];
+    }
+
+    // Prend le complément à deux (inverse de tous les bits)
+    checksum = ~checksum;
+
+    return checksum;
+}
+
+
+void readSensors(bme280 &bme, tsl256x &tsl, veml6070 &veml, int &temp, int &pres, int &hum, uint32_t &lux, uint16_t &ir, uint16_t &comb, uint16_t &uv) {
+    uint32_t pressure;
+    int32_t temperature;
+    uint16_t humidite;
+
+    bme.sensor_read(&pressure, &temperature, &humidite);      
+    tsl.sensor_read(&comb, &ir, &lux);
+    veml.sensor_read(&uv);
+
+    temp = bme.compensate_temperature(temperature);
+    pres = bme.compensate_pressure(pressure) / 100;
+    hum = bme.compensate_humidity(humidite);
+}
+
+
+void displayData(ssd1306 &screen, int temp, int hum, int pres, uint32_t lux, uint16_t ir, uint16_t uv) {
+    ManagedString displayTemp = "Temp:" + ManagedString(temp / 100) + "." + (temp > 0 ? ManagedString(temp % 100) : ManagedString((-temp) % 100)) + " C";
+    ManagedString displayHumi = "Humi:" + ManagedString(hum / 100) + "." + ManagedString(temp % 100) + " rH";
+    ManagedString displayPres = "Pres:" + ManagedString(pres) + " hPa";
+    ManagedString displayLux = "Lux:" + ManagedString((int)lux);
+    ManagedString displayIR = "IR:" + ManagedString((int)ir);
+    ManagedString displayUV = "UV:" + ManagedString(uv);
+
+    screen.display_line(0, 0, displayTemp.toCharArray());
+    screen.display_line(1, 0, displayHumi.toCharArray());
+    screen.display_line(2, 0, displayPres.toCharArray());
+    screen.display_line(3, 0, displayLux.toCharArray());
+    screen.display_line(4, 0, displayIR.toCharArray());
+    screen.display_line(5, 0, displayUV.toCharArray());
+    screen.update_screen();
+}

@@ -1,6 +1,7 @@
 import serial
 import json
 from AppObject import AppObject
+import threading
 
 class SerialPacket(AppObject):
     def __init__(self, buffer: bytes):
@@ -24,6 +25,7 @@ class SerialServer:
         self.ser.rtscts = False     #disable hardware (RTS/CTS) flow control
         self.ser.dsrdtr = False       #disable hardware (DSR/DTR) flow control
         print('Starting Up Serial Monitor')
+        
         try:
             self.ser.open()
         except serial.SerialException as e:
@@ -35,6 +37,12 @@ class SerialServer:
         print("Message <" + msg + "> sent to micro-controller." )
 
     def run(self):
+        t = threading.Thread(target =self._run)
+        t.daemon = True
+        t.start()
+        print("serial server threading up")
+
+    def _run(self):
         while self.ser.isOpen() :
             data_bytes = self.ser.read_until(b"EOT\n")
             try:

@@ -1,5 +1,5 @@
 class AppObject:
-    app = None
+    app  = None
 
     @classmethod
     def __initClass__(cls,app):
