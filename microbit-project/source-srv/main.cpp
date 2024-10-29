@@ -1,4 +1,5 @@
 #include "server.h"
+#include <openssl/aes.h>
 MicroBit    uBit;
 Server serv(&uBit, 65534);
 
