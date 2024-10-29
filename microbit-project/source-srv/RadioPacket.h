@@ -1,9 +1,10 @@
 #pragma once
 #include "MicroBit.h"
+//#include <openssl/aes.h>
 
 class RadioPacket{
     public: 
-        RadioPacket(PacketBuffer p);
+        RadioPacket(PacketBuffer p, uint16_t idserv);
         ~RadioPacket();
         int getErrorCode();
         ManagedString getError();
@@ -12,10 +13,13 @@ class RadioPacket{
         uint16_t getDest();
         PacketBuffer *getBuffer();
         uint16_t getDataSize();
+        void encrypt();
+        void decrypt();
     
     private:
         void setErrorCode(int code);
         PacketBuffer buffer;
+        uint16_t idServ;
         uint8_t opcode;
         uint16_t idSource;
         uint16_t idDest;

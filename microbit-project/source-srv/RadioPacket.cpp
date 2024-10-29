@@ -1,15 +1,22 @@
 #include "RadioPacket.h"
 
-RadioPacket::RadioPacket(PacketBuffer p){
+
+RadioPacket::RadioPacket(PacketBuffer p, uint16_t idserv){
+    idServ = idserv;
     errornb=0;
     buffer = p;
     if(buffer.length()>9){
         opcode = p[0];
         idSource = (p[2]<<8)|p[1];
         idDest = (p[4]<<8)|p[3];
+        if(idDest != idServ){
+            setErrorCode(-3);
+            return;
+        }
         dataSize = (p[6] << 8) | p[5];
-        if(buffer.length()!=7+dataSize){
+        if(buffer.length()!=9+dataSize){
             setErrorCode(-2);
+            return;
         }
         else{
             data = &p[7];
@@ -17,10 +24,14 @@ RadioPacket::RadioPacket(PacketBuffer p){
     }
     else{
         setErrorCode(-1);
+        return;
     }
 }
 
-RadioPacket::~RadioPacket(){}
+RadioPacket::~RadioPacket(){
+
+}
+
 uint16_t RadioPacket::getDataSize(){
     return dataSize;
 }
@@ -49,6 +60,9 @@ ManagedString RadioPacket::getError(){
         case -2:
             return ManagedString("Erreur: taille datasize NOK");
             break;
+        case -3:
+            return ManagedString("Erreur: ID Destination NOK");
+            break;
     default:
         return ManagedString("Erreur RadioPaquet");
         break;
@@ -61,4 +75,9 @@ int RadioPacket::getErrorCode(){
 
 void RadioPacket::setErrorCode(int code){
     errornb = code;
+}
+
+
+void RadioPacket::decrypt(){
+    
 }

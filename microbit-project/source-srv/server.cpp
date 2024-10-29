@@ -1,7 +1,8 @@
 #include "server.h"
 #include "RadioPacket.h"
 
-Server::Server(MicroBit *ubit):uBit(ubit),serialServer(ubit){
+Server::Server(MicroBit *ubit, uint16_t id):uBit(ubit),serialServer(ubit){
+    ID = id;
     uBit->radio.enable();
     uBit->init();
     serialServer.sendString("initialisation serveur OK");
@@ -18,7 +19,7 @@ void Server::run(){
 }
 
 void Server::receivePacket(){
-    RadioPacket p (uBit->radio.datagram.recv());
+    RadioPacket p (uBit->radio.datagram.recv(), ID);
     if(p.getErrorCode()){
         serialServer.sendString(p.getError());
         serialServer.sendString(*p.getBuffer());

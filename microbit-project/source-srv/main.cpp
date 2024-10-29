@@ -1,6 +1,6 @@
 #include "server.h"
 MicroBit    uBit;
-Server serv(&uBit);
+Server serv(&uBit, 65534);
 
 void onDataReceive(MicroBitEvent){
     serv.receivePacket();
