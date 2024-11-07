@@ -1,7 +1,6 @@
 # Program to control passerelle between Android application
 # and micro-controller through USB tty
 
-import threading
 import SerialServer
 import UDPServer
 import DBManager
@@ -28,7 +27,7 @@ class Application:
                 self.serialserv = SerialServer.SerialServer("/dev/ttyACM0", 115200)
                 self.dbManager = DBManager.DBManager('data.db')
                 self.commands ={
-                        "get-devices": self.test
+                        "get-devices": self.dbManager.getDevices
                 }     
 
         def run(self):
@@ -37,9 +36,6 @@ class Application:
                 while True:
                         item = self.q.get()
                         print(item)
-        
-        def test(self):
-                self.q.put("chibre")
 
         def close(self):
                 self.udpserv.close()

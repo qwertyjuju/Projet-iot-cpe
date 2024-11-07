@@ -1,14 +1,23 @@
-#include "server.h"
-#include <openssl/aes.h>
+#include "RadioServer.h"
+#include <openssl/rsa.h>
 MicroBit    uBit;
-Server serv(&uBit, 65534);
+RadioServer rserv(&uBit, 65534);
+SerialServer sserv(&uBit);
 
-void onDataReceive(MicroBitEvent){
-    serv.receivePacket();
+void onRadioDataReceive(MicroBitEvent){
+    rserv.receivePacket();
+}
+
+void onSerialDataReceive(MicroBitEvent){
+    sserv.receiveData();
 }
 
 int main()
 {
-    uBit.messageBus.listen(MICROBIT_ID_RADIO, MICROBIT_RADIO_EVT_DATAGRAM, onDataReceive);
-    serv.run();
+    uBit.init();
+    rserv.init(&sserv);
+    sserv.init(&rserv);
+    uBit.messageBus.listen(MICROBIT_ID_RADIO, MICROBIT_RADIO_EVT_DATAGRAM, onRadioDataReceive);
+    uBit.messageBus.listen(MICROBIT_ID_SERIAL, MICROBIT_SERIAL_EVT_DELIM_MATCH, onSerialDataReceive);
+    rserv.run();
 }

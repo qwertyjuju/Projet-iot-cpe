@@ -2,6 +2,7 @@ import serial
 import json
 from AppObject import AppObject
 import threading
+import queue
 
 class SerialPacket(AppObject):
     def __init__(self, buffer: bytes):
@@ -14,7 +15,8 @@ class SerialPacket(AppObject):
 
 class SerialServer:
     def __init__(self, port, baudrate):
-        self.ser=serial.Serial()
+        self.q = queue.Queue()
+        self.ser: serial.Serial =serial.Serial()
         self.ser.port=port
         self.ser.baudrate=baudrate
         self.ser.bytesize = serial.EIGHTBITS #number of bits per bytes
@@ -32,17 +34,16 @@ class SerialServer:
             print(f"Serial {port} port not available: {e}")
             exit()
 
-    def sendUARTMessage(self, msg):
-        self.ser.write(msg)
-        print("Message <" + msg + "> sent to micro-controller." )
-
     def run(self):
-        t = threading.Thread(target =self._run)
-        t.daemon = True
-        t.start()
+        rthread = threading.Thread(target =self._run_read)
+        rthread.daemon = True
+        rthread.start()
+        wthread = threading.Thread(target= self._run_write)
+        wthread.daemon =True
+        wthread.start()
         print("serial server threading up")
 
-    def _run(self):
+    def _run_read(self):
         while self.ser.isOpen() :
             data_bytes = self.ser.read_until(b"EOT\n")
             try:
@@ -56,9 +57,17 @@ class SerialServer:
                 #print("Error decoding JSON:", e)
             print(data_bytes[:-4])
 
-        
+    def _run_write(self):
+        while self.ser.isOpen():
+            msg = self.q.get()
+            if self.ser.isOpen():
+                self.ser.write(msg)
+            print("Message <" + msg + "> sent to micro-controller." )
 
-            
+    def send(self, msg: bytes):
+        
+        self.q.put(msg)
+    
     def close(self):
          print("closing serial ...")
          self.ser.close()

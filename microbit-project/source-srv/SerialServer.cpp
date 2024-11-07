@@ -2,9 +2,20 @@
 
 SerialServer::SerialServer(MicroBit *ubit){
     uBit = ubit;
+    uBit->serial.eventOn("EOT\n");
 }
 
 SerialServer::~SerialServer(){
+
+}
+
+void SerialServer::init(RadioServer *serv){
+    radioServer = serv;
+    sendString("Initiatialisation Serial Server OK");
+}
+
+
+void SerialServer::receiveData(){
 
 }
 
