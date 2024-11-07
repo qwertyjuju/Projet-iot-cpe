@@ -13,7 +13,8 @@ SensorServer::~SensorServer(){
 
 void SensorServer::run(){
     while(true){
-        sReader.read();
+        display.setupScreen(sReader.read());
+        display.render();
         uBit->sleep(100);
     }
 }
