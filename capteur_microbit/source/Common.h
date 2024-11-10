@@ -23,3 +23,4 @@ inline bool compare(uint8_t *buffer1, uint8_t *buffer2, int size){
     }
     return true;
 }
+

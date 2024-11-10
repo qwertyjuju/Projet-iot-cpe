@@ -8,9 +8,12 @@ Display::~Display(){
 
 }
 
-void Display::init(){
-    
+void Display::init(ManagedString string){
+    screen.display_line(0, 0, string.toCharArray());
+    screen.update_screen();
 }
+
+
 void Display::setupScreen(SensorData *data){
     int i = 0;
     uint8_t * buffer = data->getBuffer();

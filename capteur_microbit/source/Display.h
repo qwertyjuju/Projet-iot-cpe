@@ -8,7 +8,7 @@ class Display{
     public:
         Display(MicroBit *ubit, MicroBitI2C *i2c, MicroBitPin *pin);
         ~Display();
-        void init();
+        void init(ManagedString string);   
         void setupScreen(SensorData *data);
         void render();
 

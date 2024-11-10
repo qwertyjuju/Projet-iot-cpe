@@ -18,6 +18,18 @@ MeasureType SensorData::getTypes(){
     return measuredtypes;
 }
 
+void SensorData::setTypes(uint8_t *buffer, int length){
+    measuredtypes = (MeasureType)0;
+    for(int i=0; i<length; i++){
+        measuredtypes =  measuredtypes|(MeasureType)buffer[i];
+    }
+}
+
+void SensorData::displayOrder(){
+    for(int i=0; i<6; i++){
+        this->order[i] = ;
+    }
+}
 void SensorData::setTypes(MeasureType type){
     buffersize = 0;
     measuredtypes = type;

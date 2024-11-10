@@ -12,6 +12,7 @@ class SensorServer{
         void init();
         void InitConnection();
         void receivepacket();
+        void sendPacket(SensorData *sData);
 
     private :
         ManagedString SN;
@@ -22,4 +23,5 @@ class SensorServer{
         SensorReader *sReader;
         Display *display;
         uint8_t state;
+        
 };

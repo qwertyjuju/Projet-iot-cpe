@@ -9,6 +9,7 @@ class SensorData{
         uint16_t getSize();
         uint8_t *getBuffer();
         void setTypes(MeasureType type);
+        void setTypes(uint8_t *buffer, int length);
         void reset();
         void init();
         MeasureType getTypes();
