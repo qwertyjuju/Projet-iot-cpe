@@ -24,6 +24,7 @@ class RadioPacket{
         void setDest(uint16_t dest);
         void setData(uint8_t *src, int size);
 
+        bool isBroadcast();
 
         //encryption, Decryption
         void encrypt();
@@ -32,6 +33,7 @@ class RadioPacket{
     private:
         void setErrorCode(int code);
         PacketBuffer *pbuffer;
+        bool broadcast;
         int bufferSize;
         uint16_t idServ;
         uint8_t opcode;

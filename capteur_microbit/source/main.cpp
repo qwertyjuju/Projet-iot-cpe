@@ -17,7 +17,6 @@ int main()
     server.init();
     server.run();
     uBit.messageBus.listen(MICROBIT_ID_RADIO, MICROBIT_RADIO_EVT_DATAGRAM, onRadioDataReceive);
-
     release_fiber();
 }
 

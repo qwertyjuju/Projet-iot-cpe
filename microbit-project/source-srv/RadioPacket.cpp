@@ -22,9 +22,12 @@ RadioPacket::RadioPacket(PacketBuffer *p, uint16_t idserv){
         idSource = (buffer[2]<<8)|buffer[1];
         idDest = (buffer[4]<<8)|buffer[3];
         if(idDest != 65535){
+            broadcast = false;
             if(idDest != idServ){
                 setErrorCode(-3);
             }
+        }else{
+            broadcast = true;
         }
         dataSize = (buffer[6] << 8) | buffer[5];
         if(bufferSize!=9+dataSize){
@@ -59,6 +62,9 @@ uint16_t RadioPacket::getDest(){
     return idDest;
 }
 
+bool RadioPacket::isBroadcast(){
+    return broadcast;
+}
 
 void RadioPacket::setOpCode(uint8_t opcode){
     this->opcode = opcode;
