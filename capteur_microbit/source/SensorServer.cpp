@@ -34,9 +34,9 @@ void SensorServer::InitConnection(){
 }
 void SensorServer::run(){
     while(true){
-        SensorData *data= sReader.read();
-        display.setupScreen(data);
-        display.render();
+        SensorData *data= sReader->read();
+        display->setupScreen(data);
+        display->render();
         uBit->sleep(100);
     }
 }
