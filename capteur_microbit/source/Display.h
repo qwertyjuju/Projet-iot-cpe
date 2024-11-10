@@ -13,4 +13,5 @@ class Display{
 
     private:
         ssd1306 screen;
+        MicroBit *uBit;
 };
