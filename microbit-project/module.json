@@ -4,8 +4,7 @@
   "description": "The micro:bit runtime common abstraction with examples.",
   "license": "MIT",
   "dependencies": {
-    "microbit": "https://git.mob-dev.fr/Schoumi/microbit.git",
-    "mbed-tls":"https://github.com/qwertyjuju/mbed-tls.git" 
+    "microbit": "https://git.mob-dev.fr/Schoumi/microbit.git"
   },
   "targetDependencies": {},
   "bin": "./source-srv"

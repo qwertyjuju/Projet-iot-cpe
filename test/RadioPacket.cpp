@@ -1,11 +1,22 @@
 #include "RadioPacket.h"
 
+RadioPacket::RadioPacket(){
+    data = NULL;
+    dataSize=0;
+    idServ=0;
+    idSource =0;
+    idDest=65535;
+    opcode=0;
+    bufferSize = 9;
+    pbuffer = NULL;
 
+}
 RadioPacket::RadioPacket(PacketBuffer *p, uint16_t idserv){
     idServ = idserv;
     errornb=0;
-    buffer = p;
-    if(buffer->length()>9){
+    pbuffer = p;
+    bufferSize = pbuffer->length();
+    if(bufferSize>9){
         opcode = (*p)[0];
         idSource = ((*p)[2]<<8)|(*p)[1];
         idDest = ((*p)[4]<<8)|(*p)[3];
@@ -14,7 +25,7 @@ RadioPacket::RadioPacket(PacketBuffer *p, uint16_t idserv){
             return;
         }
         dataSize = ((*p)[6] << 8) | (*p)[5];
-        if(buffer->length()!=9+dataSize){
+        if(bufferSize!=9+dataSize){
             setErrorCode(-2);
             return;
         }
@@ -29,7 +40,7 @@ RadioPacket::RadioPacket(PacketBuffer *p, uint16_t idserv){
 }
 
 RadioPacket::~RadioPacket(){
-
+    free(data);
 }
 
 uint16_t RadioPacket::getDataSize(){
@@ -47,8 +58,30 @@ uint16_t RadioPacket::getDest(){
     return idDest;
 }
 
-PacketBuffer *RadioPacket::getBuffer(){
-    return buffer;
+
+void RadioPacket::setOpCode(uint8_t opcode){
+    this->opcode = opcode;
+
+}
+void RadioPacket::setSource(uint16_t source){
+    idSource = source;
+}
+void RadioPacket::setDest(uint16_t dest){
+    idDest = dest;
+}
+
+void RadioPacket::setData(uint8_t *src, int size){
+    data = (uint8_t*)malloc(size);
+    memcpy(data, src, size);
+}
+
+PacketBuffer* RadioPacket::getPacketBuffer(){
+    if(pbuffer==NULL){
+        pbuffer = new PacketBuffer(bufferSize+dataSize);
+        uint8_t * buffer = pbuffer->getBytes();
+        memcpy(&buffer[0], &opcode,sizeof(uint8_t));
+    }
+    return pbuffer;
 }
 
 ManagedString RadioPacket::getError(){

@@ -26,7 +26,7 @@ void RadioServer::receivePacket(){
     RadioPacket p (&uBit->radio.datagram.recv(), ID);
     if(p.getErrorCode()){
         serialServer->sendString(p.getError());
-        serialServer->sendString(*p.getBuffer());
+        serialServer->sendString(*p.getPacketBuffer());
         serialServer->sendString(p.getDataSize());
     }
     else{
