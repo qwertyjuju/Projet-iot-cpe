@@ -8,8 +8,6 @@ class SensorData{
         ~SensorData();
         uint16_t getSize();
         uint8_t *getBuffer();
-/*         void incrementBufferSize(MeasureType type);
-        void decrementBufferSize(MeasureType type); */
         void setTypes(MeasureType type);
         void reset();
         void init();
