@@ -4,7 +4,7 @@
 
 class SensorData{
     public:
-        SensorData(MicroBit *ubit, MeasureType type);
+        SensorData(MeasureType type);
         ~SensorData();
         uint16_t getSize();
         uint8_t *getBuffer();
@@ -19,7 +19,6 @@ class SensorData{
         
         
     private:
-        MicroBit *uBit;
         uint8_t *buffer;
         uint16_t buffersize;
         MeasureType measuredtypes;

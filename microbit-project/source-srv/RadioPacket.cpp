@@ -15,22 +15,23 @@ RadioPacket::RadioPacket(PacketBuffer *p, uint16_t idserv){
     idServ = idserv;
     errornb=0;
     pbuffer = p;
+    uint8_t *buffer =  p->getBytes();
     bufferSize = pbuffer->length();
     if(bufferSize>9){
-        opcode = (*p)[0];
-        idSource = ((*p)[2]<<8)|(*p)[1];
-        idDest = ((*p)[4]<<8)|(*p)[3];
-        if(idDest != idServ){
-            setErrorCode(-3);
-            return;
+        opcode = buffer[0];
+        idSource = (buffer[2]<<8)|buffer[1];
+        idDest = (buffer[4]<<8)|buffer[3];
+        if(idDest != 65535){
+            if(idDest != idServ){
+                setErrorCode(-3);
+            }
         }
-        dataSize = ((*p)[6] << 8) | (*p)[5];
+        dataSize = (buffer[6] << 8) | buffer[5];
         if(bufferSize!=9+dataSize){
             setErrorCode(-2);
-            return;
         }
         else{
-            data = &(*p)[7];
+            data = &buffer[7];
         }
     }
     else{

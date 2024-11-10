@@ -1,7 +1,6 @@
 #include "SensorData.h"
 
-SensorData::SensorData(MicroBit *ubit, MeasureType type){
-    uBit = ubit;
+SensorData::SensorData( MeasureType type){
     this->buffersize= 0;
     this->setTypes(type);
 }
@@ -41,49 +40,6 @@ void SensorData::setTypes(MeasureType type){
         buffersize+=3;
     }
 }
-/*
-void SensorData::incrementBufferSize(MeasureType type){
-        if(type&TEMPERATURE){
-            buffersize+=5;
-        }
-        if(type&HUMIDITY){
-            buffersize+=5;
-        }
-        if(type&PRESSURE){
-            buffersize+=5;
-        }
-        if(type&LUX){
-            buffersize+=5;
-        }
-        if(type&UV){
-            buffersize+=3;
-        }
-        if(type&IR){
-            buffersize+=3;
-        }
-}
-
-void SensorData::decrementBufferSize(MeasureType type){
-        if(type&TEMPERATURE){
-            buffersize-=5;
-        }
-        if(type&HUMIDITY){
-            buffersize-=5;
-        }
-        if(type&PRESSURE){
-            buffersize-=5;
-        }
-        if(type&LUX){
-            buffersize-=5;
-        }
-        if(type&UV){
-            buffersize-=3;
-        }
-        if(type&IR){
-            buffersize-=3;
-        }
-}*/
-
 void SensorData::set(int index , uint8_t value){
     buffer[index] = value;
 

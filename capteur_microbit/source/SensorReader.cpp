@@ -1,6 +1,6 @@
 #include "SensorReader.h"
 
-SensorReader::SensorReader(MicroBit *ubit, MicroBitI2C *i2c,MeasureType type): tphSensor(ubit, i2c), liSensor(ubit, i2c), uvSensor(ubit, i2c), data(ubit, type){
+SensorReader::SensorReader(MicroBit *ubit, MicroBitI2C *i2c,MeasureType type): tphSensor(ubit, i2c), liSensor(ubit, i2c), uvSensor(ubit, i2c), data(type){
     uBit = ubit;
 }
 SensorReader::~SensorReader(){
@@ -9,7 +9,6 @@ SensorReader::~SensorReader(){
 SensorData *SensorReader::read(){
     data.reset();
     data.init();
-    
     int t=0, p=0, h=0;
     uint32_t lux = 0;
     uint16_t ir = 0, uv = 0;

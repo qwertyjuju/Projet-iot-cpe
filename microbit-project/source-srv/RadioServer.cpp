@@ -23,15 +23,20 @@ void RadioServer::init(SerialServer *serv){
 }
 
 void RadioServer::receivePacket(){
-    RadioPacket p (&uBit->radio.datagram.recv(), ID);
+    PacketBuffer pb = uBit->radio.datagram.recv();
+    RadioPacket p (&pb, ID);
     if(p.getErrorCode()){
         serialServer->sendString(p.getError());
         serialServer->sendString(*p.getPacketBuffer());
         serialServer->sendString(p.getDataSize());
+        serialServer->sendString(p.getSource());
+        serialServer->sendString(p.getDest());
     }
     else{
         switch(p.getOpCode()){
             case 0:
+                serialServer->sendString(*p.getPacketBuffer());
+                serialServer->sendString(p.getDataSize());
                 break;
         }
     }

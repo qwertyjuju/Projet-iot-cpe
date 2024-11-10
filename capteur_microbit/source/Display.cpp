@@ -1,7 +1,6 @@
 #include "Display.h"
 
 Display::Display(MicroBit *ubit, MicroBitI2C *i2c, MicroBitPin *pin): screen(ubit, i2c, pin){
-    this->uBit = ubit;
 
 }
 
@@ -13,10 +12,6 @@ void Display::init(){
     
 }
 void Display::setupScreen(SensorData *data){
-   /*  screen.display_line(0, 0, "Hello, world!");
-    screen.update_screen(); */
-
-
     int i = 0;
     uint8_t * buffer = data->getBuffer();
     while(i<data->getSize()){
@@ -63,7 +58,7 @@ void Display::setupScreen(SensorData *data){
             screen.display_line(6, 0, displayIR.toCharArray());
             i+=3;
         }
-    } 
+    }
 }
 
 void Display::render(){
