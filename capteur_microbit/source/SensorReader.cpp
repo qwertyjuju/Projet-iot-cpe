@@ -1,36 +1,12 @@
 #include "SensorReader.h"
 
-SensorReader::SensorReader(MicroBit *ubit, MicroBitI2C *i2c,MeasureType type): tphSensor(ubit, i2c), liSensor(ubit, i2c), uvSensor(ubit, i2c){
-    measuredtypes = type;
-    buffersize=0;
-    for (int bit = 1; bit <= (int) MeasureType::UV; bit <<= 1)
-    {
-        switch((MeasureType) bit & type){
-            case TEMPERATURE:
-                addMeasuredType(TEMPERATURE);
-                break;
-            case HUMIDITY:
-                addMeasuredType(HUMIDITY);
-                break;
-            case PRESSURE:
-                addMeasuredType(PRESSURE);
-                break;
-            case LUX:
-                addMeasuredType(LUX);
-                break;
-            case IR:
-                addMeasuredType(IR);
-                break;
-            case UV:
-                addMeasuredType(UV);
-                break;
-        }
-    }
+SensorReader::SensorReader(MicroBit *ubit, MicroBitI2C *i2c,MeasureType type): tphSensor(ubit, i2c), liSensor(ubit, i2c), uvSensor(ubit, i2c), data(ubit, type){
+    uBit = ubit;
 }
 SensorReader::~SensorReader(){
     
 }
-void SensorReader::addMeasuredType(MeasureType atype){
+/* void SensorReader::addMeasuredType(MeasureType atype){
     if(!(measuredtypes&atype))
     {
         measuredtypes = measuredtypes|atype;
@@ -45,14 +21,16 @@ void SensorReader::removeMeasuredType(MeasureType rtype){
         measuredtypes = measuredtypes|rtype;
         data.decrementBufferSize(rtype);
     }
-}
+} */
 
 SensorData *SensorReader::read(){
     data.reset();
     data.init();
+    
     int t=0, p=0, h=0;
     uint32_t lux = 0;
     uint16_t ir = 0, uv = 0;
+    MeasureType measuredtypes = data.getTypes();
     if(measuredtypes&(TEMPERATURE|PRESSURE|HUMIDITY)){
         uint32_t temp_p;
         int32_t temp_t;

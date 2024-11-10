@@ -13,12 +13,13 @@ class SensorServer{
         void InitConnection();
         void receivepacket(MicroBitEvent);
 
-
     private :
         ManagedString SN;
         MicroBit *uBit;
         uint16_t ID;
-        SensorReader sReader;
-        Display display;
+        MicroBitI2C *i2c;
+        MicroBitPin *P0;
+        SensorReader *sReader;
+        Display *display;
         uint8_t state;
 };

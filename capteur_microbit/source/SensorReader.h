@@ -11,13 +11,12 @@ class SensorReader{
     public:  
         SensorReader(MicroBit *ubit, MicroBitI2C *i2c,MeasureType type);
         ~SensorReader();
-        void addMeasuredType(MeasureType atype);
-        void removeMeasuredType(MeasureType rtype);
+/*         void addMeasuredType(MeasureType atype);
+        void removeMeasuredType(MeasureType rtype); */
         SensorData *read();
     
     private:
-        uint16_t buffersize;
-        MeasureType measuredtypes;
+        MicroBit *uBit;
         bme280 tphSensor; // Température, Pression, Humidité
         tsl256x liSensor; // Lux, IR
         veml6070 uvSensor; // UV

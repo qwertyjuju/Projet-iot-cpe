@@ -1,16 +1,24 @@
 #include "SensorServer.h"
 
 
-SensorServer::SensorServer(MicroBit *ubit, MicroBitI2C *i2c, MicroBitPin *P0): sReader(ubit, i2c, TEMPERATURE|LUX|IR|PRESSURE|HUMIDITY|UV), display(ubit, i2c, P0), SN(uBit->getSerial()){
+
+SensorServer::SensorServer(MicroBit *ubit, MicroBitI2C *i2c, MicroBitPin *P0){
     uBit = ubit;
     ID = 0;
-    state = 0;
-    uBit->radio.enable();
-    InitConnection();
+    this->i2c = i2c;
+    this->P0 = P0;
 }
 
 SensorServer::~SensorServer(){
+    free(sReader);
+    free(display);
+}
 
+void SensorServer::init(){
+    uBit->init();
+    uBit->radio.enable();
+    sReader = new SensorReader(uBit, i2c, TEMPERATURE|LUX|IR|PRESSURE|HUMIDITY|UV);
+    display  = new Display(uBit, i2c, P0);
 }
 void SensorServer::InitConnection(){
     if (state==0){
