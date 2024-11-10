@@ -1,8 +1,6 @@
 #include "SensorServer.h"
 
-
-
-SensorServer::SensorServer(MicroBit *ubit, MicroBitI2C *i2c, MicroBitPin *P0){
+SensorServer::SensorServer(MicroBit *ubit, MicroBitI2C *i2c, MicroBitPin *P0): SN(ubit->getSerial()){
     uBit = ubit;
     ID = 0;
     this->i2c = i2c;
@@ -19,6 +17,8 @@ void SensorServer::init(){
     uBit->radio.enable();
     sReader = new SensorReader(uBit, i2c, TEMPERATURE|LUX|IR|PRESSURE|HUMIDITY|UV);
     display  = new Display(uBit, i2c, P0);
+    InitConnection();
+    
 }
 void SensorServer::InitConnection(){
     if (state==0){
@@ -26,11 +26,12 @@ void SensorServer::InitConnection(){
             RadioPacket packet;
             packet.setData((uint8_t *)SN.toCharArray(), SN.length());
             uBit->radio.datagram.send(*packet.getPacketBuffer());
-            uBit->sleep(5000);
+            //uBit->display.scroll(packet.getDataSize());
+            uBit->display.scroll(ManagedString((char*)packet.getData()));
+            //uBit->display.scroll("init");
+            uBit->sleep(3000);
         }
-    }
-
-    
+    } 
 }
 void SensorServer::run(){
     while(true){
@@ -41,7 +42,7 @@ void SensorServer::run(){
     }
 }
 
-void SensorServer::receivepacket(MicroBitEvent){
+void SensorServer::receivepacket(){
     PacketBuffer pb = uBit->radio.datagram.recv();
     RadioPacket p (&pb, ID);
     if(!p.getErrorCode()){
@@ -52,7 +53,7 @@ void SensorServer::receivepacket(MicroBitEvent){
                 uint8_t *data = p.getData();
                 uint16_t size = p.getDataSize();
                 int16_t snSize =SN.length();
-                if (size==snSize+2 && compare(data,(uint8_t *)SN.toCharArray(),snSize)){
+                if (size==snSize+4 && compare(data,(uint8_t *)SN.toCharArray(),snSize)){
                     memcpy(&ID,&data[snSize-1],sizeof(uint16_t));
                 }
             }
@@ -62,4 +63,8 @@ void SensorServer::receivepacket(MicroBitEvent){
         }
     }
 }
+
+/* void SensorServer::sendPacket(RadioPacket *packet){
+    uBit->radio.datagram.send(*packet->getPacketBuffer());
+} */
 

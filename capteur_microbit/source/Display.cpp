@@ -9,6 +9,9 @@ Display::~Display(){
 
 }
 
+void Display::init(){
+    
+}
 void Display::setupScreen(SensorData *data){
    /*  screen.display_line(0, 0, "Hello, world!");
     screen.update_screen(); */

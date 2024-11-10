@@ -11,7 +11,7 @@ class SensorServer{
         void run();
         void init();
         void InitConnection();
-        void receivepacket(MicroBitEvent);
+        void receivepacket();
 
     private :
         ManagedString SN;
