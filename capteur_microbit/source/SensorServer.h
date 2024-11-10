@@ -1,5 +1,6 @@
 #pragma once
 #include "MicroBit.h"
+#include "RadioPacket.h"
 #include "SensorReader.h"
 #include "SensorData.h"
 #include "Display.h"
@@ -9,14 +10,16 @@ class SensorServer{
         ~SensorServer();
         void run();
         void init();
-        //void receivepacket();
-
+        void InitConnection();
+        void receivepacket(MicroBitEvent);
 
     private :
+        ManagedString SN;
         MicroBit *uBit;
         uint16_t ID;
         MicroBitI2C *i2c;
         MicroBitPin *P0;
         SensorReader *sReader;
         Display *display;
+        uint8_t state;
 };
