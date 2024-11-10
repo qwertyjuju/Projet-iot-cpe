@@ -42,7 +42,8 @@ void SensorServer::run(){
 }
 
 void SensorServer::receivepacket(MicroBitEvent){
-    RadioPacket p (&uBit->radio.datagram.recv(), ID);
+    PacketBuffer pb = uBit->radio.datagram.recv();
+    RadioPacket p (&pb, ID);
     if(!p.getErrorCode()){
         switch (state)
         {

@@ -1,4 +1,5 @@
 #pragma once
+#include "MicroBit.h"
 
 typedef enum {
         TEMPERATURE = 1<<0,
@@ -15,7 +16,7 @@ inline MeasureType operator|(MeasureType a, MeasureType b)
     return static_cast<MeasureType>(static_cast<int>(a) | static_cast<int>(b));
 }
 
-bool compare(uint8_t *buffer1, uint8_t *buffer2, int size){
+inline bool compare(uint8_t *buffer1, uint8_t *buffer2, int size){
     for(int i=0; i<size; i++){
         if(buffer1[i]!= buffer2[i])
             return false;
