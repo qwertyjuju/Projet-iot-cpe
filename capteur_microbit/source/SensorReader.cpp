@@ -6,23 +6,6 @@ SensorReader::SensorReader(MicroBit *ubit, MicroBitI2C *i2c,MeasureType type): t
 SensorReader::~SensorReader(){
     
 }
-/* void SensorReader::addMeasuredType(MeasureType atype){
-    if(!(measuredtypes&atype))
-    {
-        measuredtypes = measuredtypes|atype;
-        data.incrementBufferSize(atype);
-    }
-}
-
-void SensorReader::removeMeasuredType(MeasureType rtype){
-    measuredtypes = (MeasureType)(measuredtypes&(~rtype));
-    if(!(measuredtypes&rtype))
-    {
-        measuredtypes = measuredtypes|rtype;
-        data.decrementBufferSize(rtype);
-    }
-} */
-
 SensorData *SensorReader::read(){
     data.reset();
     data.init();
