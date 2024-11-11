@@ -5,7 +5,7 @@
 class RadioPacket{
     public: 
         RadioPacket();
-        RadioPacket(PacketBuffer *p, uint16_t idserv);
+        RadioPacket(PacketBuffer p, uint16_t idserv);
         ~RadioPacket();
         int getErrorCode();
         ManagedString getError();
@@ -15,7 +15,7 @@ class RadioPacket{
         uint16_t getSource();
         uint16_t getDest();
         uint8_t *getData();
-        PacketBuffer *getPacketBuffer();
+        PacketBuffer getPacketBuffer();
         uint16_t getDataSize();
 
         //setters
@@ -32,7 +32,6 @@ class RadioPacket{
     
     private:
         void setErrorCode(int code);
-        PacketBuffer *pbuffer;
         bool broadcast;
         int bufferSize;
         uint16_t idServ;

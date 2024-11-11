@@ -2,10 +2,19 @@ import sqlite3
 from AppObject import AppObject
 
 class DBManager(AppObject):
-    def __init__(self, dbname):
+    def __init__(self, dbname, initsqlfile):
         self.conn = sqlite3.connect(dbname)
         self.cursor = self.conn.cursor()
+        with open(initsqlfile, 'r') as f:
+            initsql = f.read()
+            self.cursor.executescript(initsql)
 
+    def createDevice(self):
+        pass
+        
+    def getDevice(self, snNumber, ):
+        print(self.cursor.execute(f"SELECT * FROM Device WHERE serialNumber = {snNumber}").fetchall())
+        
     def store_data_in_db(self, data):
         try:
             # Extraire les informations spécifiques

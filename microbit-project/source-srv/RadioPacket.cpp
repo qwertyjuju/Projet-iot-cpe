@@ -8,15 +8,13 @@ RadioPacket::RadioPacket(){
     idDest=65535;
     opcode=0;
     bufferSize = 9;
-    pbuffer = NULL;
-
+    checksum = 0;
 }
-RadioPacket::RadioPacket(PacketBuffer *p, uint16_t idserv){
+RadioPacket::RadioPacket(PacketBuffer p, uint16_t idserv){
     idServ = idserv;
     errornb=0;
-    pbuffer = p;
-    uint8_t *buffer =  p->getBytes();
-    bufferSize = pbuffer->length();
+    uint8_t *buffer =  p.getBytes();
+    bufferSize = p.length();
     if(bufferSize>9){
         opcode = buffer[0];
         idSource = (buffer[2]<<8)|buffer[1];
@@ -34,7 +32,8 @@ RadioPacket::RadioPacket(PacketBuffer *p, uint16_t idserv){
             setErrorCode(-2);
         }
         else{
-            data = &buffer[7];
+            data = (uint8_t*) malloc(dataSize);
+            memcpy(data,&buffer[7],dataSize);
         }
     }
     else{
@@ -45,6 +44,10 @@ RadioPacket::RadioPacket(PacketBuffer *p, uint16_t idserv){
 
 RadioPacket::~RadioPacket(){
     free(data);
+}
+
+uint8_t *RadioPacket::getData(){
+    return data;
 }
 
 uint16_t RadioPacket::getDataSize(){
@@ -80,14 +83,18 @@ void RadioPacket::setDest(uint16_t dest){
 void RadioPacket::setData(uint8_t *src, int size){
     data = (uint8_t*)malloc(size);
     memcpy(data, src, size);
+    dataSize = size;
 }
 
-PacketBuffer* RadioPacket::getPacketBuffer(){
-    if(pbuffer==NULL){
-        pbuffer = new PacketBuffer(bufferSize+dataSize);
-        uint8_t * buffer = pbuffer->getBytes();
-        memcpy(&buffer[0], &opcode,sizeof(uint8_t));
-    }
+PacketBuffer RadioPacket::getPacketBuffer(){
+    PacketBuffer pbuffer(bufferSize+dataSize);
+    uint8_t * buffer = pbuffer.getBytes();
+    memcpy(&buffer[0], &opcode,sizeof(uint8_t));
+    memcpy(&buffer[1], &idSource,sizeof(uint16_t));
+    memcpy(&buffer[3], &idDest,sizeof(uint16_t));
+    memcpy(&buffer[5], &dataSize,sizeof(uint16_t));
+    memcpy(&buffer[7], data, dataSize);
+    memcpy(&buffer[7+dataSize], checksum, sizeof(uint16_t));
     return pbuffer;
 }
 

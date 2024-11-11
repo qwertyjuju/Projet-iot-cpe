@@ -1,18 +1,13 @@
-CREATE TABLE Device (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT
-);
-
-CREATE TABLE Capteur (
+CREATE TABLE IF NOT EXISTS  Device (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT,
-    device_id INTEGER,  
-    FOREIGN KEY (device_id) REFERENCES Device(id)
+    serialNumber TEXT NOT NULL UNIQUE
 );
 
-CREATE TABLE Mesure (
+
+CREATE TABLE IF NOT EXISTS  Mesure (
     id INTEGER PRIMARY KEY AUTOINCREMENT,  
-    data TEXT NOT NULL,
-    capteur_id INTEGER, 
-    FOREIGN KEY (capteur_id) REFERENCES Capteur(id)
-)
+    data TEXT NOT NULL
+);
+
+UPDATE SQLITE_SEQUENCE SET seq = 1 WHERE name = 'Device'

@@ -3,17 +3,10 @@ import json
 from AppObject import AppObject
 import threading
 import queue
+import time
+from SerialPacket import SerialPacket
 
-class SerialPacket(AppObject):
-    def __init__(self, buffer: bytes):
-        self.buffer = buffer
-        self.opcode = self.buffer[0]
-        if self.opcode ==0:
-            pass
-        else:
-            pass
-
-class SerialServer:
+class SerialServer(AppObject):
     def __init__(self, port, baudrate):
         self.q = queue.Queue()
         self.ser: serial.Serial =serial.Serial()
@@ -27,7 +20,6 @@ class SerialServer:
         self.ser.rtscts = False     #disable hardware (RTS/CTS) flow control
         self.ser.dsrdtr = False       #disable hardware (DSR/DTR) flow control
         print('Starting Up Serial Monitor')
-        
         try:
             self.ser.open()
         except serial.SerialException as e:
@@ -45,27 +37,30 @@ class SerialServer:
 
     def _run_read(self):
         while self.ser.isOpen() :
-            data_bytes = self.ser.read_until(b"EOT\n")
-            try:
-                # Convertir les bytes en JSON
-                json_data = json.loads(data_bytes.decode('utf-8'))
-                #print("Received data:", json_data)
-                # Stocker les données dans la base de données
-                self.store_data_in_db(json_data)
-            except (json.JSONDecodeError, UnicodeDecodeError) as e:
-                pass
-                #print("Error decoding JSON:", e)
-            print(data_bytes[:-4])
+            try:    
+                packet: SerialPacket = SerialPacket(self.ser.read_until(b"EOT\n")[:-4])
+                match packet.getOpCode():
+                    case 0:
+                        self.app.execSerialCommand("get-device", packet.getData()["SNumber"])
+                        break
+                    case 255:
+                        self.app.log(packet.getData()["msg"])
+                        break
+            except Exception as e:
+                self.app.log(f"error: {e}")
 
     def _run_write(self):
         while self.ser.isOpen():
-            msg = self.q.get()
-            if self.ser.isOpen():
-                self.ser.write(msg)
-            print("Message <" + msg + "> sent to micro-controller." )
+            try:
+                msg = self.q.get()
+                if self.ser.isOpen():
+                    sendmsg= msg+"EOT\n"
+                    self.ser.write(sendmsg.encode())
+                self.app.log("Message <" + sendmsg + "> sent to micro-controller." )
+            except Exception as e:
+                self.app.log(e)
 
     def send(self, msg: bytes):
-        
         self.q.put(msg)
     
     def close(self):
