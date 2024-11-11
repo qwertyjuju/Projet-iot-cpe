@@ -21,7 +21,7 @@ void SensorServer::init(){
 }
 void SensorServer::InitConnection(){
     if (state==0){
-        display->setMessage("INITIALISATION CONNEXION...");
+        display->setMessage("Initialisation connexion..");
         while(state==0){        
             RadioPacket packet;
             packet.setData((uint8_t *)SN.toCharArray(), SN.length());
