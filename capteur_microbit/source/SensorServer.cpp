@@ -57,7 +57,7 @@ void SensorServer::receivepacket(){
                 uint8_t *displayorder;
                 if (size>=snSize+2 && compare(data,(uint8_t *)SN.toCharArray(),snSize)){
                     memcpy(&ID,&data[snSize-1],sizeof(uint16_t));
-                    IDDst = p.getDest();
+                    IDDst = p.getSource();
                     displayOrderSize = size-snSize-2;
                     displayorder = (uint8_t*)malloc(displayOrderSize);   
                     memcpy(displayorder,&data[snSize+2],(displayOrderSize));
