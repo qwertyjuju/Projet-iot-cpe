@@ -13,8 +13,7 @@ SensorServer::~SensorServer(){
 }
 
 void SensorServer::init(){
-    uBit->init();
-    uBit->radio.enable();
+    uBit->radio.enable(); 
     sReader = new SensorReader(uBit, i2c, TEMPERATURE|LUX|IR|PRESSURE|HUMIDITY|UV);
     display  = new Display(uBit, i2c, P0);
     InitConnection();
@@ -24,21 +23,24 @@ void SensorServer::InitConnection(){
         while(state==0){        
             RadioPacket packet;
             packet.setData((uint8_t *)SN.toCharArray(), SN.length());
+            //uBit->display.scroll(SN.length());
             uBit->radio.datagram.send(*packet.getPacketBuffer());
-            uBit->sleep(3000);
+            uBit->sleep(10000);
         }
     } 
 }
 void SensorServer::run(){
   while(true){
         if(state == 1){
-        SensorData *data= sReader->read();
-        display->setupScreen(data);
-        display->render();
-        sendPacket(data);
-        uBit->sleep(5000);
-        }
-     
+    
+            SensorData *data= sReader->read();
+            uBit->display.scroll("r");
+            display->setupScreen(data);
+            display->render();
+            /*sendPacket(data); */
+            uBit->sleep(5000);
+        
+        }     
     } 
 }
 
@@ -53,21 +55,39 @@ void SensorServer::receivepacket(){
                 uint8_t *data = p.getData();
                 uint16_t size = p.getDataSize();
                 int16_t snSize =SN.length();
-                if (size==snSize+4 && compare(data,(uint8_t *)SN.toCharArray(),snSize)){
+                uint8_t displayOrderSize =0;
+                uint8_t *displayorder;
+                if (size>=snSize+2 && compare(data,(uint8_t *)SN.toCharArray(),snSize)){
                     memcpy(&ID,&data[snSize-1],sizeof(uint16_t));
+                    displayOrderSize = size-snSize-2;
+                    displayorder = (uint8_t*)malloc(displayOrderSize);   
+                    memcpy(displayorder,&data[snSize+2],(displayOrderSize));
+                    sReader->setDisplayOrder(displayorder,displayOrderSize);
                     state = 1;
+                    free(displayorder);
                 }
-            }
-        case 1 :
-            if(state==1){
-                uint8_t *data = p.getData();
-                uint16_t size = p.getDataSize();
-                uint16_t snSize =SN.length();
-                if(size>=snSize+4 ){
-                }
+
+                //uBit->display.scroll(state);  
             }
             break;
-        
+        case 2 :
+            if(state==1){
+                
+                uint8_t *data = p.getData();
+                uint16_t size = p.getDataSize();
+                uint16_t snSize =SN.length(); 
+                int8_t displayOrderSize =0;
+                uint8_t *displayorder;
+
+                memcpy(&ID,&data[snSize-1],sizeof(uint16_t));
+                displayOrderSize = size-snSize-2;
+                displayorder = (uint8_t*)malloc(displayOrderSize);   
+                memcpy(displayorder,&data[snSize+2],(displayOrderSize));
+                sReader->setDisplayOrder(displayorder,displayOrderSize);
+                state = 1;
+                free(displayorder);
+            }
+            break;
         default:
             break;
         }
@@ -77,6 +97,7 @@ void SensorServer::receivepacket(){
 void SensorServer::sendPacket(SensorData *sData){
     RadioPacket packet;
     packet.setData((uint8_t *)sData->getBuffer(), sData->getSize());
+    //uBit->display.scroll(sData->getSize());
     uBit->radio.datagram.send(*packet.getPacketBuffer());
 } 
 

@@ -9,6 +9,7 @@ SensorReader::~SensorReader(){
 SensorData *SensorReader::read(){
     data.reset();
     data.init();
+    uBit->display.scroll(data.getSize());
     int t=0, p=0, h=0;
     uint32_t lux = 0;
     uint16_t ir = 0, uv = 0;
@@ -65,4 +66,9 @@ SensorData *SensorReader::read(){
         }
     }
     return &data;
+}
+
+
+void SensorReader::setDisplayOrder(uint8_t* order, int size){
+    data.setDisplayOrder(order, size);
 }
