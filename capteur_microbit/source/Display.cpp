@@ -8,7 +8,10 @@ Display::~Display(){
 
 }
 
-void Display::init(ManagedString string){
+void Display::init( ){
+
+}
+void Display::setMessage(ManagedString string){
     screen.display_line(0, 0, string.toCharArray());
     screen.update_screen();
 }
