@@ -25,7 +25,6 @@ void SensorServer::InitConnection(){
         while(state==0){        
             RadioPacket packet;
             packet.setData((uint8_t *)SN.toCharArray(), SN.length());
-            //uBit->display.scroll(SN.length());
             uBit->radio.datagram.send(packet.getPacketBuffer());
             uBit->sleep(10000);
         }
@@ -35,10 +34,9 @@ void SensorServer::run(){
   while(true){
         if(state == 1){
             SensorData *data= sReader->read();
-            uBit->display.scroll("r");
             display->setupScreen(data);
             display->render();
-            /*sendData(data); */
+            sendData(data);
             uBit->sleep(5000);
         
         }     
@@ -68,7 +66,6 @@ void SensorServer::receivepacket(){
                     free(displayorder);
                 }
 
-                //uBit->display.scroll(state);  
             }
             break;
         case 2 :
@@ -99,7 +96,6 @@ void SensorServer::sendData(SensorData *sData){
     packet.setDest(IDDst);
     packet.setOpCode(1);
     packet.setData((uint8_t *)sData->getBuffer(), sData->getSize());
-    //uBit->display.scroll(sData->getSize());
     uBit->radio.datagram.send(packet.getPacketBuffer());
 } 
 

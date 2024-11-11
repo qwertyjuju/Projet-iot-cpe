@@ -16,6 +16,11 @@ void Display::setMessage(ManagedString string){
     screen.update_screen();
 }
 
+void Display::clear(){
+    screen.display_line(0, 0, "                                                                                           ");
+    screen.update_screen();
+}
+
 
 void Display::setupScreen(SensorData *data){
     int i = 0;

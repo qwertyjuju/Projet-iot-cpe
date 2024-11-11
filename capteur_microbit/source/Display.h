@@ -12,6 +12,7 @@ class Display{
         void setMessage(ManagedString string);   
         void setupScreen(SensorData *data);
         void render();
+        void clear();
 
     private:
         ssd1306 screen;
