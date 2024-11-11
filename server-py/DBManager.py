@@ -12,8 +12,8 @@ class DBManager(AppObject):
     def createDevice(self):
         pass
         
-    def getDevice(self, snNumber, ):
-        print(self.cursor.execute(f"SELECT * FROM Device WHERE serialNumber = {snNumber}").fetchall())
+    def getDevice(self, snNumber, createIfNotExists=False):
+        print(self.cursor.execute(f"SELECT * FROM Device WHERE serialNumber = (?)", [snNumber]).fetchall())
         
     def store_data_in_db(self, data):
         try:

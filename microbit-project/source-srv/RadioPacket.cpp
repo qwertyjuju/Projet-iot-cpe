@@ -31,6 +31,9 @@ RadioPacket::RadioPacket(PacketBuffer p, uint16_t idserv){
         if(bufferSize!=9+dataSize){
             setErrorCode(-2);
         }
+        if (dataSize>=255){
+            setErrorCode(-4);
+        }
         else{
             data = (uint8_t*) malloc(dataSize);
             memcpy(data,&buffer[7],dataSize);
@@ -109,6 +112,9 @@ ManagedString RadioPacket::getError(){
             break;
         case -3:
             return ManagedString("Erreur: ID Destination NOK");
+            break;
+        case -4:
+            return ManagedString("Erreur: Taille data trop importante");
             break;
     default:
         return ManagedString("Erreur RadioPaquet");

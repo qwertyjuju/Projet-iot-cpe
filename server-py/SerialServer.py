@@ -5,6 +5,7 @@ import threading
 import queue
 import time
 from SerialPacket import SerialPacket
+from Event import Event, EventType
 
 class SerialServer(AppObject):
     def __init__(self, port, baudrate):
@@ -37,14 +38,16 @@ class SerialServer(AppObject):
 
     def _run_read(self):
         while self.ser.isOpen() :
-            try:    
-                packet: SerialPacket = SerialPacket(self.ser.read_until(b"EOT\n")[:-4])
+            try:   
+                bytes =self.ser.read_until(b"EOT\n")[:-4]
+                print(bytes)
+                packet: SerialPacket = SerialPacket(bytes)
                 match packet.getOpCode():
                     case 0:
-                        self.app.execSerialCommand("get-device", packet.getData()["SNumber"])
+                        self.app.addEvent(Event(EventType.SERIAL, "get-device", [packet.getData()["SNumber"], True]))
                         break
                     case 255:
-                        self.app.log(packet.getData()["msg"])
+                        
                         break
             except Exception as e:
                 self.app.log(f"error: {e}")
