@@ -47,6 +47,7 @@ RadioPacket::~RadioPacket(){
     free(data);
 }
 
+
 uint8_t *RadioPacket::getData(){
     return data;
 }
@@ -69,6 +70,7 @@ uint16_t RadioPacket::getDest(){
 bool RadioPacket::isBroadcast(){
     return broadcast;
 }
+
 
 void RadioPacket::setOpCode(uint8_t opcode){
     this->opcode = opcode;

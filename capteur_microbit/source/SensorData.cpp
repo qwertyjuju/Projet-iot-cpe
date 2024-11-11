@@ -18,18 +18,39 @@ MeasureType SensorData::getTypes(){
     return measuredtypes;
 }
 
-void SensorData::setTypes(uint8_t *buffer, int length){
-    measuredtypes = (MeasureType)0;
-    for(int i=0; i<length; i++){
-        measuredtypes =  measuredtypes|(MeasureType)buffer[i];
+void SensorData::setDisplayOrder(uint8_t* order, int size){
+    MeasureType temp = (MeasureType)0;
+    for(uint8_t i=0; i<size; i++) {
+        switch (order[i]) {
+            case 'T': 
+                temp = temp | TEMPERATURE;
+                this->order[0] = i;
+                break;
+            case 'P': 
+                temp = temp | PRESSURE;
+                this->order[1] = i;
+                break;
+            case 'H': 
+                temp = temp | HUMIDITY;
+                this->order[2] = i;
+                break;
+            case 'L': 
+                temp = temp | LUX;
+                this->order[3] = i;
+                break;
+            case 'U': 
+                temp = temp | UV;
+                this->order[4] = i;
+                break;
+            case 'I': 
+                temp = temp | IR;
+                this->order[5] = i;
+                break;
+        }
     }
+    setTypes(temp);
 }
 
-void SensorData::displayOrder(){
-    for(int i=0; i<6; i++){
-        this->order[i] = ;
-    }
-}
 void SensorData::setTypes(MeasureType type){
     buffersize = 0;
     measuredtypes = type;
@@ -52,6 +73,7 @@ void SensorData::setTypes(MeasureType type){
         buffersize+=3;
     }
 }
+
 void SensorData::set(int index , uint8_t value){
     buffer[index] = value;
 
@@ -68,6 +90,24 @@ void SensorData::set(int index , uint32_t value){
 void SensorData::set(int index , int value){
     memcpy(&buffer[index], &value, sizeof(int));
 }
+uint8_t SensorData::getOrder(MeasureType index){
+    switch(index){
+        case TEMPERATURE:
+            return order[0];
+        case PRESSURE:
+            return order[1];
+        case HUMIDITY:
+            return order[2];
+        case LUX:
+            return order[3];
+        case UV:
+            return order[4];
+        case IR:
+            return order[5];
+        default:
+            return 0;
+    }
+}
 
 uint16_t SensorData::getSize(){
     return buffersize;
@@ -76,3 +116,5 @@ uint16_t SensorData::getSize(){
 uint8_t *SensorData::getBuffer(){
     return buffer;
 } 
+
+

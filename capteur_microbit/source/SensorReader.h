@@ -14,6 +14,7 @@ class SensorReader{
 /*         void addMeasuredType(MeasureType atype);
         void removeMeasuredType(MeasureType rtype); */
         SensorData *read();
+        void setDisplayOrder(uint8_t* order, int size);
     
     private:
         MicroBit *uBit;
