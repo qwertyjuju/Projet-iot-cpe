@@ -12,12 +12,13 @@ class SensorServer{
         void init();
         void InitConnection();
         void receivepacket();
-        void sendPacket(SensorData *sData);
+        void sendData(SensorData *sData);
 
     private :
         ManagedString SN;
         MicroBit *uBit;
         uint16_t ID;
+        uint16_t IDDst;
         MicroBitI2C *i2c;
         MicroBitPin *P0;
         SensorReader *sReader;
