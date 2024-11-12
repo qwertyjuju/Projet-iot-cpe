@@ -26,23 +26,27 @@ class Application:
 
         def init(self):
                 self.udpserv = UDPServer.UDPServer("0.0.0.0", 10000)
-                self.serialserv = SerialServer.SerialServer("/dev/ttyACM0", 115200)
+                #self.serialserv = SerialServer.SerialServer("/dev/ttyACM0", 115200)
                 self.dbManager = DBManager.DBManager('data.db', 'script_bdd.sql')
-                self.commands ={
+                self.commands = {
                         "get-device": self.dbManager.getDevice,
+                        "get-devices": self.dbManager.getDevices,
+                        "get-measures": self.dbManager.getMeasures,
+                        "get-measure": self.dbManager.getMeasure,
+                        "set-order": self.dbManager.setOrder,
                         "log": self.log,
                 }
 
         def run(self):
                 self.udpserv.run()
-                self.serialserv.run()
+                #self.serialserv.run()
                 while True:
                         event = self.q.get()
                         self.processEvent(event)
 
         def close(self):
                 self.udpserv.close()
-                self.serialserv.close()
+                #self.serialserv.close()
 
         def addEvent(self, event: Event):
                 self.q.put(event)
