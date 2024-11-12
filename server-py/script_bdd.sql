@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS Mesure (
     data TEXT NOT NULL,
     measure_timestamp DATETIME NOT NULL,
     device_id INTEGER NOT NULL,
-        FOREIGN KEY (device_id) REFERENCES Device(id)
+    FOREIGN KEY (device_id) REFERENCES Device(id)
 );
 
 UPDATE SQLITE_SEQUENCE SET seq = 1 WHERE name = 'Device'
