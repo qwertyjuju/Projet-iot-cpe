@@ -80,6 +80,8 @@ void SensorServer::receivepacket(){
                 uint8_t *data = p.getData();
                 uint16_t size = p.getDataSize();
 
+                uBit->display.scroll(&data);
+
                 sReader->setDisplayOrder(data,size);
                 state = 1;
             }
@@ -88,6 +90,9 @@ void SensorServer::receivepacket(){
             break;
         }
     }
+    else{
+        uBit->display.scroll("ERR");
+        }
 }
 
 void SensorServer::sendData(SensorData *sData){
