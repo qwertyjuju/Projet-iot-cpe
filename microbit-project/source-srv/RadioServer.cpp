@@ -1,5 +1,5 @@
 #include "RadioServer.h"
-#include "RadioPacket.h"
+
 
 RadioServer::RadioServer(MicroBit *ubit, uint16_t id):uBit(ubit){
     ID = id;
@@ -12,7 +12,7 @@ RadioServer::~RadioServer(){
 void RadioServer::run(){
     while(1){
         serialServer->receiveData();
-        uBit->sleep(1000);
+        uBit->sleep(3000);
     }
 }
 
@@ -23,18 +23,32 @@ void RadioServer::init(SerialServer *serv){
 }
 
 void RadioServer::receivePacket(){
-    PacketBuffer pb = uBit->radio.datagram.recv();
-    RadioPacket rp(pb, ID);
-    uBit->display.scroll(rp.getDataSize());
-    RadioPacket resp;
+    RadioPacket rp(uBit->radio.datagram.recv(), ID);
     SerialPacket sp;
-    uint16_t src =1;
+    if(!rp.getErrorCode()){
+        switch(rp.getOpCode()){
+            case 0:
+                sp.setData(rp.getData(), rp.getDataSize());
+                serialServer->sendPacket(&sp);
+                break;
+            case 1:
+                sp.setOpCode(1);
+                sp.setData(rp.getData(), rp.getDataSize());
+                serialServer->sendPacket(&sp);
+                break;
+        }
+    }
+    else{
+        serialServer->sendMessage(rp.getError());
+    }
+    /*
+    uint16_t src =0x0001;
     uint8_t buffer[16]={0};
     char test[4]= {'L', 'U', 'T', 'H'};
     if(!rp.getErrorCode()){
         switch(rp.getOpCode()){
             case 0:
-                serialServer->sendMessage(pb);
+                serialServer->sendMessage(rp.getSource());
                 resp.setSource(ID);
                 resp.setDest(0);
                 memcpy(buffer, (uint8_t*)rp.getData(), 10);
@@ -44,11 +58,26 @@ void RadioServer::receivePacket(){
                 uBit->radio.datagram.send(resp.getPacketBuffer());
                 break;
             case 1:
-                serialServer->sendMessage(rp.getPacketBuffer());
+                serialServer->sendMessage(rp.getSource());
                 break;
         }
     }
     else{
         serialServer->sendMessage(rp.getError());
+    }*/
+}
+
+void RadioServer::processSerialPacket(SerialPacket p){
+    RadioPacket rp;
+    uint8_t opcode = p.getOpCode();
+    switch(opcode){
+        case 0:
+            rp.setSource(ID);
+            rp.setDest(0);
+            rp.setOpCode(p.getOpCode());
+            rp.setData(p.getData(), p.getDataSize());
+            uBit->radio.datagram.send(rp.getPacketBuffer());
     }
+
+
 }

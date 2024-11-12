@@ -6,6 +6,9 @@ class AppObject:
         from app import Application
         app : Application = None
 
+    def finishEvent(event):
+        pass
+
     @classmethod
     def __initClass__(cls,app):
         cls.app=app

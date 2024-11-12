@@ -23,6 +23,7 @@ RadioPacket::RadioPacket(PacketBuffer p, uint16_t idserv){
             broadcast = false;
             if(idDest != idServ){
                 setErrorCode(-3);
+                return;
             }
         }else{
             broadcast = true;
@@ -30,9 +31,11 @@ RadioPacket::RadioPacket(PacketBuffer p, uint16_t idserv){
         dataSize = (buffer[6] << 8) | buffer[5];
         if(bufferSize!=9+dataSize){
             setErrorCode(-2);
+            return;
         }
         if (dataSize>=255){
             setErrorCode(-4);
+            return;
         }
         else{
             data = (uint8_t*) malloc(dataSize);

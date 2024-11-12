@@ -5,7 +5,7 @@ import threading
 import queue
 import time
 from SerialPacket import SerialPacket
-from Event import Event, EventType
+from Event import Event, EventSender
 
 class SerialServer(AppObject):
     def __init__(self, port, baudrate):
@@ -42,28 +42,36 @@ class SerialServer(AppObject):
                 bytes =self.ser.read_until(b"EOT\n")[:-4]
                 print(bytes)
                 packet: SerialPacket = SerialPacket(bytes)
-                match packet.getOpCode():
-                    case 0:
-                        self.app.addEvent(Event(EventType.SERIAL, "get-device", [packet.getData()["SNumber"], True]))
-                        break
-                    case 255:
-                        
-                        break
+                opcode= packet.getOpCode()
+                if opcode == 0:
+                    self.app.addEvent(Event(EventSender.SERIAL,"get-device", [packet.getData()["SNumber"], True]))
+                if opcode ==255:
+                    self.app.addEvent(Event(EventSender.SERIAL,"log", [packet.getData()["msg"]]))
             except Exception as e:
                 self.app.log(f"error: {e}")
 
     def _run_write(self):
         while self.ser.isOpen():
             try:
-                msg = self.q.get()
+                msg : SerialPacket = self.q.get()
                 if self.ser.isOpen():
-                    sendmsg= msg+"EOT\n"
-                    self.ser.write(sendmsg.encode())
-                self.app.log("Message <" + sendmsg + "> sent to micro-controller." )
+                    sendmsg= msg.getBuffer()
+                    sendmsg.extend("EOT\n".encode())
+                    self.ser.write(sendmsg)
+                self.app.addEvent(Event(EventSender.SERIAL,"log", ["Message <" + str(sendmsg) + "> sent to micro-controller." ]))
             except Exception as e:
-                self.app.log(e)
+                self.app.addEvent(Event(EventSender.SERIAL,"log", [e]))
 
-    def send(self, msg: bytes):
+    def finishEvent(self, event: Event):
+        if event.isprocessed():
+            if event.getCmd() == "get-device":
+                data :list =event.getData()
+                p =SerialPacket()
+                p.appendBuffer(data[2])
+                p.appendBuffer(data[0])
+                self.send(p)
+
+    def send(self, msg: SerialPacket):
         self.q.put(msg)
     
     def close(self):

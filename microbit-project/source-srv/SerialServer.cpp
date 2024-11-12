@@ -15,12 +15,19 @@ void SerialServer::init(RadioServer *serv){
 
 
 void SerialServer::receiveData(){
-    uBit->serial.readUntil("EOT\n");
+    ManagedString ms = uBit->serial.readUntil("EOT\n");
+    uBit->display.scroll(ms);
+    //SerialPacket p(ms);
+    //if(!p.getErrorCode()){
+        //radioServer->processSerialPacket(p);
+    //}
 }
 
 
 void SerialServer::sendPacket(SerialPacket *p){
-    uBit->serial.send(p->getBuffer(), p->getSize());
+    uint8_t code= p->getOpCode();
+    uBit->serial.send(&code, 1);
+    uBit->serial.send(p->getData(), p->getDataSize());
     uBit->serial.send("EOT\n");
 }
 void SerialServer::sendMessage(ManagedString str){

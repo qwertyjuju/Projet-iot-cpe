@@ -6,7 +6,7 @@ import UDPServer
 import DBManager
 from  AppObject import AppObject
 import queue
-from Event import EventType, Event
+from Event import EventSender, Event
 
 def main():
         app = Application()
@@ -28,13 +28,9 @@ class Application:
                 self.udpserv = UDPServer.UDPServer("0.0.0.0", 10000)
                 self.serialserv = SerialServer.SerialServer("/dev/ttyACM0", 115200)
                 self.dbManager = DBManager.DBManager('data.db', 'script_bdd.sql')
-                self.UDPCommands ={
-                        "get-devices": self.dbManager.getDevices,
-                        "log": self.logEvent
-                }
-                self.serialCommands ={
+                self.commands ={
                         "get-device": self.dbManager.getDevice,
-                        "log": self.logEvent,
+                        "log": self.log,
                 }
 
         def run(self):
@@ -52,39 +48,24 @@ class Application:
                 self.q.put(event)
 
         def processEvent(self, event: Event):
-                eventtype =event.getType()
-                if(eventtype == EventType.SERIAL):
-                        self.execSerialCommand(event.getCmd(), event.getArgs()) 
-                if(eventtype == EventType.UDP):
-                        self.execSerialCommand(event.getCmd(), event.getArgs())
-                event.setProcessed()
-
-        def execUDPCommand(self, command, args=None):
                 try:
-                        if command in self.UDPCommands:
+                        command = event.getCmd()
+                        args =event.getArgs()
+                        sender = event.getSender()
+                        if  command in self.commands:
                                 if args:
-                                        self.UDPCommands[command](*args)
+                                        event.setData(self.commands[command](*event.getArgs()))
                                 else:
-                                        self.UDPCommands[command]()    
+                                        event.setData(self.commands[command]())
                         else:
-                                self.log(f"Unknown UDP command:  {command}")
+                                self.log(f"Unknown command:  {command}")
+                        event.setProcessed()
+                        if sender == EventSender.SERIAL:
+                                self.serialserv.finishEvent(event)
+                        if sender == EventSender.UDP:
+                                self.udpserv.finishEvent(event)
                 except Exception as e:
                         self.log(e)
-
-        def execSerialCommand(self, command, args=None):
-                try:
-                        if command in self.serialCommands:
-                                if args:
-                                        self.serialCommands[command](*args)
-                                else:
-                                        self.serialCommands[command]()    
-                        else:
-                                self.log("Unknown Serial command: ", command)
-                except Exception as e:
-                        self.log(e)
-
-        def logEvent(self, event: Event):
-                self.log(event.getData()["msg"])
 
         def log(self, msg):
                 print(msg)

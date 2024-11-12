@@ -1,16 +1,16 @@
 from enum import Enum
 
-class EventType(Enum):
+class EventSender(Enum):
     APP=0,
     SERIAL=1,
     UDP=2
     
 
 class Event:
-    def __init__(self, eventType: EventType, cmd=None, args=[]):
-        self.type = eventType
-        self.cmd= None
-        self.args=[]
+    def __init__(self, sender: EventSender, cmd=None, args=[]):
+        self.sender = sender
+        self.cmd= cmd
+        self.args=args
         self.data = {}
         self.processed=False
 
@@ -32,8 +32,8 @@ class Event:
     def isprocessed(self):
         return self.processed
     
-    def getType(self):
-        return self.type
+    def getSender(self):
+        return self.sender
 
     def getArgs(self):
         return self.args

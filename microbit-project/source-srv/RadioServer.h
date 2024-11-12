@@ -2,6 +2,7 @@
 #include "MicroBit.h"
 #include "SerialServer.h"
 #include "RadioPacket.h"
+#include "SerialPacket.h"
 
 class SerialServer;
 
@@ -13,6 +14,7 @@ class RadioServer{
         void receivePacket();
         void run();
         void initReceptor(RadioPacket *p);
+        void processSerialPacket(SerialPacket p);
         
     private:
         uint16_t ID;

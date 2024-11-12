@@ -9,11 +9,16 @@ class DBManager(AppObject):
             initsql = f.read()
             self.cursor.executescript(initsql)
 
-    def createDevice(self):
-        pass
         
     def getDevice(self, snNumber, createIfNotExists=False):
-        print(self.cursor.execute(f"SELECT * FROM Device WHERE serialNumber = (?)", [snNumber]).fetchall())
+        if createIfNotExists:
+            try:
+                self.cursor.execute("INSERT INTO Device (serialNumber) VALUES (?)", [snNumber])
+                self.conn.commit()
+            except:
+                pass
+        res = self.cursor.execute("SELECT * FROM Device WHERE serialNumber = (?)", [snNumber]).fetchall()
+        return res[0]
         
     def store_data_in_db(self, data):
         try:
@@ -37,6 +42,4 @@ class DBManager(AppObject):
     def getDevices (self):
         self.cursor.execute("SELECT * FROM device")
         devices = self.cursor.fetchall()
-        print(devices)
-        devices = ["678", "123", "bite"]
         return devices
