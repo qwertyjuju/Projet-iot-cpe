@@ -45,22 +45,24 @@ class DBManager(AppObject):
         
     def getDevices(self):
         #TODO decoment when test ends and return devices
-        #self.cursor.execute("SELECT serialNumber FROM device")
-        #devices = self.cursor.fetchall()
+        self.cursor.execute("SELECT serialNumber FROM device")
+        devices = self.cursor.fetchall()
     
-        return json.dumps({"cmd": "set-devices", "args": ["device_id1", "device_id2", "device_id3"]})
+        return json.dumps(devices)
     
     def getMeasures(self, device_id):
-        #self.cursor.execute("SELECT data, measure_timestamp FROM measure JOIN device WHERE device = " + device_id)
-        #measure = self.cursor.fetchall()
-        
-        return json.dumps({"cmd": "set-measures", "args": [{"device_id": "device_id1", "measures": [{"temperature": 22.5, "luminosity": 300, "pressure": 1013, "humidity": 45, "datetime": "2024-10-25T15:00:00Z"}, {"temperature": 23.5, "luminosity": 310, "pressure": 1011, "humidity": 35, "datetime": "2024-10-25T15:00:00Z"}]}]})
+        self.cursor.execute("SELECT data, measure_timestamp FROM measure JOIN device WHERE device = (?)", (device_id))
+        measure = self.cursor.fetchall()
+
+        return json.dumps(measure)
 
     def getMeasure(self, device_id):
-        #self.cursor.execute("SELECT data, measure_timestamp FROM measure JOIN device WHERE device = " + device_id +" ORDER BY measure_timestamp DESC LIMIT 1")
-        #measure = self.cursor.fetchall()
+        self.cursor.execute("SELECT data, measure_timestamp FROM measure JOIN device WHERE device = (?) ORDER BY measure_timestamp DESC LIMIT 1", (device_id))
+        measure = self.cursor.fetchall()
         
-        return json.dumps({"cmd": "set-measure", "args": [{"device_id": "device_id1", "last_measure": {"temperature": 22.5, "luminosity": 300, "pressure": 1013, "humidity": 45, "datetime": "2024-10-25T15:00:00Z"}}]})
+        return json.dumps(measure)
 
     def setOrder(self, device_id, order):
-        return
+        self.cursor.execute("UPDATE orders SET displayorder = (?) WHERE id = (?)", (order, device_id))
+        self.conn.commit()
+
