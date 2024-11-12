@@ -46,6 +46,9 @@ void SensorServer::run(){
 
 void SensorServer::receivepacket(){
     RadioPacket p (uBit->radio.datagram.recv(), ID);
+    //uBit->display.scroll("REC");
+    ManagedString str((char*)p.getData());
+    uBit->display.scroll(str);
     if(!p.getErrorCode()){
         switch (p.getOpCode())
         {
@@ -56,12 +59,15 @@ void SensorServer::receivepacket(){
                 int16_t snSize =SN.length();
                 uint8_t displayOrderSize =0;
                 uint8_t *displayorder;
+
                 if (size>=snSize+2 && compare(data,(uint8_t *)SN.toCharArray(),snSize)){
                     memcpy(&ID,&data[snSize],sizeof(uint16_t));
+                    
                     IDDst = p.getSource();
-                    displayOrderSize = size-snSize-2;
+
+                    displayOrderSize = size-snSize-1;
                     displayorder = (uint8_t*)malloc(displayOrderSize);   
-                    memcpy(displayorder,&data[snSize+2],(displayOrderSize));
+                    memcpy(displayorder,&data[snSize+1],(displayOrderSize));
                     sReader->setDisplayOrder(displayorder,displayOrderSize);
                     state = 1;
                     free(displayorder);
@@ -73,16 +79,9 @@ void SensorServer::receivepacket(){
             if(state==1){
                 uint8_t *data = p.getData();
                 uint16_t size = p.getDataSize();
-                uint16_t snSize =SN.length(); 
-                int8_t displayOrderSize =0;
-                uint8_t *displayorder;
-                memcpy(&ID,&data[snSize-1],sizeof(uint16_t));
-                displayOrderSize = size-snSize-2;
-                displayorder = (uint8_t*)malloc(displayOrderSize);   
-                memcpy(displayorder,&data[snSize+2],(displayOrderSize));
-                sReader->setDisplayOrder(displayorder,displayOrderSize);
+
+                sReader->setDisplayOrder(data,size);
                 state = 1;
-                free(displayorder);
             }
             break;
         default:
@@ -93,7 +92,7 @@ void SensorServer::receivepacket(){
 
 void SensorServer::sendData(SensorData *sData){
     RadioPacket packet;
-    uBit->display.scroll(ID);
+    //uBit->display.scroll(ID);
     packet.setSource(ID);
     packet.setDest(IDDst);
     packet.setOpCode(1);
