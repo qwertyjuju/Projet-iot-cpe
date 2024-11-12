@@ -1,3 +1,4 @@
+import json
 import sqlite3
 from AppObject import AppObject
 
@@ -9,7 +10,6 @@ class DBManager(AppObject):
             initsql = f.read()
             self.cursor.executescript(initsql)
 
-        
     def getDevice(self, snNumber, createIfNotExists=False):
         if createIfNotExists:
             try:
@@ -39,7 +39,24 @@ class DBManager(AppObject):
         except sqlite3.Error as e:
             print("Error storing data:", e)
         
-    def getDevices (self):
-        self.cursor.execute("SELECT * FROM device")
-        devices = self.cursor.fetchall()
-        return devices
+    def getDevices(self):
+        #TODO decoment when test ends and return devices
+        #self.cursor.execute("SELECT serialNumber FROM device")
+        #devices = self.cursor.fetchall()
+    
+        return json.dumps({"cmd": "set-devices", "args": ["device_id1", "device_id2", "device_id3"]})
+    
+    def getMeasures(self, device_id):
+        #self.cursor.execute("SELECT data, measure_timestamp FROM measure JOIN device WHERE device = " + device_id)
+        #measure = self.cursor.fetchall()
+        
+        return json.dumps({"cmd": "set-measures", "args": [{"device_id": "device_id1", "measures": [{"temperature": 22.5, "luminosity": 300, "pressure": 1013, "humidity": 45, "datetime": "2024-10-25T15:00:00Z"}, {"temperature": 23.5, "luminosity": 310, "pressure": 1011, "humidity": 35, "datetime": "2024-10-25T15:00:00Z"}]}]})
+
+    def getMeasure(self, device_id):
+        #self.cursor.execute("SELECT data, measure_timestamp FROM measure JOIN device WHERE device = " + device_id +" ORDER BY measure_timestamp DESC LIMIT 1")
+        #measure = self.cursor.fetchall()
+        
+        return json.dumps({"cmd": "set-measure", "args": [{"device_id": "device_id1", "last_measure": {"temperature": 22.5, "luminosity": 300, "pressure": 1013, "humidity": 45, "datetime": "2024-10-25T15:00:00Z"}}]})
+
+    def setOrder(self, device_id, order):
+        return

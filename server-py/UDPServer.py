@@ -8,6 +8,7 @@ import socketserver
 import threading
 import json
 from AppObject import AppObject
+from Event import Event, EventSender
 
 class ThreadedUDPRequestHandler(socketserver.BaseRequestHandler):
 
@@ -19,8 +20,11 @@ class ThreadedUDPRequestHandler(socketserver.BaseRequestHandler):
         print(f"{current_thread.name}: client: {self.client_address}, data: {data}")
         if data != "":
             try:
-                data = json.loads(data.decode('utf-8'))
-                server.app.execCommand(data["cmd"], data["args"])
+                if (data.decode('utf-8') == "SYN"):
+                    server.send("SYN_ACK", self.client_address)
+                else:
+                    data = json.loads(data.decode('utf-8'))
+                    server.app.addEvent(Event(EventSender.UDP, data["cmd"], data["args"], self.client_address))
             except Exception as e:
                 print(e)
         #if data != "":
@@ -39,11 +43,21 @@ class UDPServer(socketserver.ThreadingMixIn, socketserver.UDPServer, AppObject):
         self.server_thread = threading.Thread(target=self.serve_forever)
         self.server_thread.daemon = True
         super().__init__((host, port),ThreadedUDPRequestHandler)
-    
+
+    def finishEvent(self, event):
+        data = event.getData()
+        address = event.getAddress()
+        if (data and address):
+            self.send(data, address)
+
+    def send(self, data, address):
+        print(f"sending, client: {address}, data: {data}")
+        self.socket.sendto(data.encode('utf-8'), address)
+
     def run(self):
         self.server_thread.start()
         print(f"Server started at {self.host} port {self.port}")
-    
+
     def close(self):
         print("closing UDP Server...")
         self.shutdown()

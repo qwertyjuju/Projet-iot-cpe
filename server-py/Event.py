@@ -7,11 +7,12 @@ class EventSender(Enum):
     
 
 class Event:
-    def __init__(self, sender: EventSender, cmd=None, args=[]):
+    def __init__(self, sender: EventSender, cmd=None, args=[], address = None):
         self.sender = sender
-        self.cmd= cmd
-        self.args=args
+        self.cmd = cmd
+        self.args = args
         self.data = {}
+        self.address = address
         self.processed=False
 
     def setcmd(self,cmd):
@@ -40,3 +41,6 @@ class Event:
     
     def getCmd(self):
         return self.cmd
+    
+    def getAddress(self):
+        return self.address
