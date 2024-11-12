@@ -17,7 +17,8 @@ void Display::setMessage(ManagedString string){
 }
 
 void Display::clear(){
-    screen.display_line(0, 0, "                                                                                           ");
+    char empty[50] ={'i'};
+    screen.display_line(0, 0, empty);
     screen.update_screen();
 }
 

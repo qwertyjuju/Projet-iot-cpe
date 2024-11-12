@@ -33,6 +33,7 @@ void SensorServer::InitConnection(){
 void SensorServer::run(){
   while(true){
         if(state == 1){
+            display->clear();
             SensorData *data= sReader->read();
             display->setupScreen(data);
             display->render();
@@ -56,7 +57,7 @@ void SensorServer::receivepacket(){
                 uint8_t displayOrderSize =0;
                 uint8_t *displayorder;
                 if (size>=snSize+2 && compare(data,(uint8_t *)SN.toCharArray(),snSize)){
-                    memcpy(&ID,&data[snSize-1],sizeof(uint16_t));
+                    memcpy(&ID,&data[snSize],sizeof(uint16_t));
                     IDDst = p.getSource();
                     displayOrderSize = size-snSize-2;
                     displayorder = (uint8_t*)malloc(displayOrderSize);   
@@ -92,6 +93,7 @@ void SensorServer::receivepacket(){
 
 void SensorServer::sendData(SensorData *sData){
     RadioPacket packet;
+    uBit->display.scroll(ID);
     packet.setSource(ID);
     packet.setDest(IDDst);
     packet.setOpCode(1);
