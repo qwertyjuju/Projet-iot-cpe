@@ -9,26 +9,20 @@ class SerialPacket:
                 self.data["SNumber"]= buffer[1:].decode()
             if self.opcode == 255:
                 self.data["msg"] = buffer[1:].decode()
+            if self.opcode == 1:
+                self.data["data"]
         else:
             self.opcode =0
-            self.buffer = bytearray()
+            self.buffer =""
 
     def setOpCode(self,code):
         self.opcode = code
 
-    def appendBuffer(self, i, size=None):
-        if type(i) is int:
-            if size:
-                self.buffer.extend(i.to_bytes(size,"big"))
-            else:
-                self.buffer.extend(i.to_bytes(2,"big"))
-        if type(i) is str:
-            self.buffer.extend(i.encode())
-        
+    def appendBuffer(self, i):
+        self.buffer += str(i)
 
     def getBuffer(self):
-        tbuffer =bytearray(self.opcode.to_bytes(2,"big"))
-        self.buffer = tbuffer+self.buffer
+        self.buffer =str(self.opcode) +self.buffer
         return self.buffer
 
 

@@ -1,7 +1,8 @@
 CREATE TABLE IF NOT EXISTS  Device (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT,
-    serialNumber TEXT NOT NULL UNIQUE
+    serialNumber TEXT NOT NULL UNIQUE,
+    displayorder TEXT NOT NULL DEFAULT "LTH"
 );
 
 

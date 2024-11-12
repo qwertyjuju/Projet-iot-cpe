@@ -67,15 +67,16 @@ void RadioServer::receivePacket(){
     }*/
 }
 
-void RadioServer::processSerialPacket(SerialPacket p){
+void RadioServer::processSerialPacket(SerialPacket *p){
     RadioPacket rp;
-    uint8_t opcode = p.getOpCode();
+    uint8_t opcode = p->getOpCode();
+    uBit->display.scroll(opcode);
     switch(opcode){
         case 0:
             rp.setSource(ID);
             rp.setDest(0);
-            rp.setOpCode(p.getOpCode());
-            rp.setData(p.getData(), p.getDataSize());
+            rp.setOpCode(p->getOpCode());
+            rp.setData(p->getData(), p->getDataSize());
             uBit->radio.datagram.send(rp.getPacketBuffer());
     }
 

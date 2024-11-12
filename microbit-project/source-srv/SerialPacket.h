@@ -4,7 +4,7 @@
 class SerialPacket{
     public:
         SerialPacket();
-        SerialPacket(ManagedString str);
+        SerialPacket(MicroBit *uBit, uint8_t *buffer, int length);
         ~SerialPacket();
         void setData(uint8_t* buffer, int datasize);
         void setOpCode(uint8_t code);

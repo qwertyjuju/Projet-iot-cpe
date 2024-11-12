@@ -45,6 +45,8 @@ class SerialServer(AppObject):
                 opcode= packet.getOpCode()
                 if opcode == 0:
                     self.app.addEvent(Event(EventSender.SERIAL,"get-device", [packet.getData()["SNumber"], True]))
+                if opcode ==1:
+                    self.app.addEvent(Event(EventSender.SERIAL,"register-measure", [packet.getData()["IDsrc"], packet.getData()["data"]]))
                 if opcode ==255:
                     self.app.addEvent(Event(EventSender.SERIAL,"log", [packet.getData()["msg"]]))
             except Exception as e:
@@ -55,9 +57,8 @@ class SerialServer(AppObject):
             try:
                 msg : SerialPacket = self.q.get()
                 if self.ser.isOpen():
-                    sendmsg= msg.getBuffer()
-                    sendmsg.extend("EOT\n".encode())
-                    self.ser.write(sendmsg)
+                    sendmsg= msg.getBuffer()+"EOT\n"
+                    self.ser.write(sendmsg.encode())
                 self.app.addEvent(Event(EventSender.SERIAL,"log", ["Message <" + str(sendmsg) + "> sent to micro-controller." ]))
             except Exception as e:
                 self.app.addEvent(Event(EventSender.SERIAL,"log", [e]))
@@ -69,6 +70,7 @@ class SerialServer(AppObject):
                 p =SerialPacket()
                 p.appendBuffer(data[2])
                 p.appendBuffer(data[0])
+                p.appendBuffer(data[3])
                 self.send(p)
 
     def send(self, msg: SerialPacket):

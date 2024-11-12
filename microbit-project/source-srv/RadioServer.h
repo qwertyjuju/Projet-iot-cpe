@@ -14,7 +14,7 @@ class RadioServer{
         void receivePacket();
         void run();
         void initReceptor(RadioPacket *p);
-        void processSerialPacket(SerialPacket p);
+        void processSerialPacket(SerialPacket *p);
         
     private:
         uint16_t ID;
