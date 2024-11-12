@@ -2,14 +2,14 @@ CREATE TABLE IF NOT EXISTS Device (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT,
     serialNumber TEXT NOT NULL UNIQUE,
-    displayorder TEXT NOT NULL DEFAULT "LTH"
+    displayorder TEXT NOT NULL DEFAULT "BITE"
 );
 
 
 CREATE TABLE IF NOT EXISTS Mesure (
     id INTEGER PRIMARY KEY AUTOINCREMENT,  
     data TEXT NOT NULL,
-    measure_timestamp DATETIME NOT NULL,
+    measure_timestamp TIMESTAMP NOT NULL,
     device_id INTEGER NOT NULL,
     FOREIGN KEY (device_id) REFERENCES Device(id)
 );

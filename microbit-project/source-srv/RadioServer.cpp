@@ -23,23 +23,30 @@ void RadioServer::init(SerialServer *serv){
 }
 
 void RadioServer::receivePacket(){
-    RadioPacket rp(uBit->radio.datagram.recv(), ID);
+    RadioPacket p(uBit->radio.datagram.recv(), ID);
     SerialPacket sp;
-    if(!rp.getErrorCode()){
-        switch(rp.getOpCode()){
+    if(!p.getErrorCode()){
+        switch(p.getOpCode()){
             case 0:
-                sp.setData(rp.getData(), rp.getDataSize());
+                sp.setData(p.getData(), p.getDataSize());
                 serialServer->sendPacket(&sp);
                 break;
             case 1:
                 sp.setOpCode(1);
-                sp.setData(rp.getData(), rp.getDataSize());
+                uint8_t *buffer = (uint8_t* )malloc(p.getDataSize()+2);
+                uint16_t src = p.getSource();
+                memcpy(buffer, &src,sizeof(uint16_t));
+                memcpy(&buffer[2], p.getData(), p.getDataSize());
+                sp.setData(buffer, p.getDataSize());
                 serialServer->sendPacket(&sp);
+                free(buffer);
                 break;
+
+
         }
     }
     else{
-        serialServer->sendMessage(rp.getError());
+        serialServer->sendMessage(p.getError());
     }
     /*
     uint16_t src =0x0001;
@@ -70,7 +77,6 @@ void RadioServer::receivePacket(){
 void RadioServer::processSerialPacket(SerialPacket *p){
     RadioPacket rp;
     uint8_t opcode = p->getOpCode();
-    uBit->display.scroll(opcode);
     switch(opcode){
         case 0:
             rp.setSource(ID);
@@ -78,6 +84,16 @@ void RadioServer::processSerialPacket(SerialPacket *p){
             rp.setOpCode(p->getOpCode());
             rp.setData(p->getData(), p->getDataSize());
             uBit->radio.datagram.send(rp.getPacketBuffer());
+            break;
+        case 2:
+            uint16_t dest;
+            memcpy(&dest, &p->getData()[p->getDataSize()-2], sizeof(uint16_t));
+            uBit->display.scroll(dest);
+            rp.setSource(ID);
+            rp.setDest(dest);
+            rp.setOpCode(p->getOpCode());
+            rp.setData(p->getData(), p->getDataSize()-2);
+            break;
     }
 
 

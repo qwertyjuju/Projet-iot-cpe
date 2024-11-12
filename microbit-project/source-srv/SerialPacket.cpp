@@ -6,14 +6,13 @@ SerialPacket::SerialPacket(){
     datasize =0;
 }
 
-SerialPacket::SerialPacket(MicroBit *uBit, uint8_t *buffer, int length){
+SerialPacket::SerialPacket(uint8_t *buffer, int length){
     errornb=0;
     data = NULL;
     opcode =99;
     if(length>2){
         opcode = buffer[0]-48;
-        uBit->display.scroll(opcode);
-        setData(&buffer[1], length-4);
+        setData(&buffer[1], length);
     }else{
         setErrorCode(-1);
     }

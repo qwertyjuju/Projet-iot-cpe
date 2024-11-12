@@ -38,6 +38,10 @@ class DBManager(AppObject):
                     print("Some fields are missing in the received JSON data.")
         except sqlite3.Error as e:
             print("Error storing data:", e)
+
+    def registerMeasure(self, devID, data, time):
+        self.cursor.execute("INSERT INTO Mesure (device_id, measure_timestamp, data) VALUES (?, ?, ?)", [devID, time, json.dumps(data)])
+        self.conn.commit()
         
     def getDevices(self):
         #TODO decoment when test ends and return devices

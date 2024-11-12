@@ -3,7 +3,7 @@ import json
 from AppObject import AppObject
 import threading
 import queue
-import time
+import datetime
 from SerialPacket import SerialPacket
 from Event import Event, EventSender
 
@@ -46,7 +46,7 @@ class SerialServer(AppObject):
                 if opcode == 0:
                     self.app.addEvent(Event(EventSender.SERIAL,"get-device", [packet.getData()["SNumber"], True]))
                 if opcode ==1:
-                    self.app.addEvent(Event(EventSender.SERIAL,"register-measure", [packet.getData()["IDsrc"], packet.getData()["data"]]))
+                    self.app.addEvent(Event(EventSender.SERIAL,"register-measure", [packet.getData()["IDsrc"], packet.getData()["data"], datetime.datetime.now()]))
                 if opcode ==255:
                     self.app.addEvent(Event(EventSender.SERIAL,"log", [packet.getData()["msg"]]))
             except Exception as e:
@@ -57,7 +57,7 @@ class SerialServer(AppObject):
             try:
                 msg : SerialPacket = self.q.get()
                 if self.ser.isOpen():
-                    sendmsg= msg.getBuffer()+"EOT\n"
+                    sendmsg= msg.getBuffer()+"\r\n"
                     self.ser.write(sendmsg.encode())
                 self.app.addEvent(Event(EventSender.SERIAL,"log", ["Message <" + str(sendmsg) + "> sent to micro-controller." ]))
             except Exception as e:
