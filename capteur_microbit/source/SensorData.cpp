@@ -14,12 +14,18 @@ void SensorData::init(){
 void SensorData::reset(){
     free(buffer);
 }
+
+// Récupère les types de mesures
 MeasureType SensorData::getTypes(){
     return measuredtypes;
 }
 
+// Définit l'ordre d'affichage des mesures
 void SensorData::setDisplayOrder(uint8_t* order, int size){
+    // Initialisation de l'ordre d'affichage
     MeasureType temp = (MeasureType)0;
+
+    // Parcours de l'ordre d'affichage
     for(uint8_t i=0; i<size; i++) {
         switch (order[i]) {
             case 'T': 
@@ -48,12 +54,16 @@ void SensorData::setDisplayOrder(uint8_t* order, int size){
                 break;
         }
     }
+    //met à jour les types de mesures
     setTypes(temp);
 }
 
+// Définit les types de mesures
 void SensorData::setTypes(MeasureType type){
     buffersize = 0;
     measuredtypes = type;
+    
+    //attribue la taille du buffer en fonction des types de mesures
     if(type&TEMPERATURE){
         buffersize+=5;
     }
@@ -74,6 +84,7 @@ void SensorData::setTypes(MeasureType type){
     }
 }
 
+// Définit la valeur d'un élément du buffer
 void SensorData::set(int index , uint8_t value){
     buffer[index] = value;
 
@@ -81,16 +92,17 @@ void SensorData::set(int index , uint8_t value){
 void SensorData::set(int index , uint16_t value){
     memcpy(&buffer[index], &value, sizeof(uint16_t));
 }
-
 void SensorData::set(int index , uint32_t value){
     memcpy(&buffer[index], &value, sizeof(uint32_t));
 
 }
-
 void SensorData::set(int index , int value){
     memcpy(&buffer[index], &value, sizeof(int));
 }
+
+// Récupère l'ordre d'affichage des mesures pour un type donéne
 uint8_t SensorData::getOrder(MeasureType index){
+    //
     switch(index){
         case TEMPERATURE:
             return order[0];
@@ -109,10 +121,12 @@ uint8_t SensorData::getOrder(MeasureType index){
     }
 }
 
+// Récupère la taille du buffer
 uint16_t SensorData::getSize(){
     return buffersize;
 }
 
+//rrcupère le buffer
 uint8_t *SensorData::getBuffer(){
     return buffer;
 } 

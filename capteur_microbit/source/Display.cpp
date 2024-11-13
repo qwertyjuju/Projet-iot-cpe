@@ -11,11 +11,13 @@ Display::~Display(){
 void Display::init( ){
 
 }
+// Méthode pour afficher un message sur l'écran
 void Display::setMessage(ManagedString string){
     screen.display_line(0, 0, string.toCharArray());
     screen.update_screen();
 }
 
+// Méthode pour effacer le contenu de l'écran
 void Display::clear(){
     char empty[50] ;
     memset(empty, ' ', 50);
@@ -23,12 +25,15 @@ void Display::clear(){
     screen.update_screen();
 }
 
-
+// Méthode pour afficher les données sur l'écran en fonction du type de mesure
 void Display::setupScreen(SensorData *data){
     int i = 0;
     uint8_t * buffer = data->getBuffer();
+
     while(i<data->getSize()){
+
         MeasureType type = (MeasureType)buffer[i];
+
         if(type == TEMPERATURE){
             int temp =0;
             memcpy(&temp, &buffer[i+1], sizeof(int));
@@ -74,6 +79,7 @@ void Display::setupScreen(SensorData *data){
     }
 } 
 
+// Méthode pour mettre à jour l'écran
 void Display::render(){
     screen.update_screen();
 }

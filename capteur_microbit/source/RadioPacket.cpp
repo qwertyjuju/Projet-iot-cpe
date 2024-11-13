@@ -1,24 +1,31 @@
 #include "RadioPacket.h"
 
+/* Constructeur par défaut de la classe RadioPacket. 
+Initialise les membres à des valeurs par défaut.*/
 RadioPacket::RadioPacket(){
-    data = NULL;
-    dataSize=0;
-    idServ=0;
-    idSource =0;
-    idDest=65535;
-    opcode=0;
-    bufferSize = 9;
-    checksum = 0;
+    data = NULL; //taille vaiable
+    dataSize=0; //2octets
+    idServ=0; 
+    idSource =0; //2octets
+    idDest=65535; //2octets
+    opcode=0; //1octet
+    bufferSize = 9; //init à 9 car cest la taille des éléments permanents à chaque message
+    checksum = 0; //2octets
 }
+
+// Constructeur de la classe RadioPacket pour créer un paquet radio à partir d'un buffer
 RadioPacket::RadioPacket(PacketBuffer p, uint16_t idserv){
     idServ = idserv;
     errornb=0;
     uint8_t *buffer =  p.getBytes();
     bufferSize = p.length();
+
+    // Vérification qu'on a bien reçu un paquet complet
     if(bufferSize>9){
         opcode = buffer[0];
         idSource = (buffer[2]<<8)|buffer[1];
         idDest = (buffer[4]<<8)|buffer[3];
+        // Vérification qu'il s(agit bien du mcirobit avec qui on s'était init
         if(idDest != 65535){
             broadcast = false;
             if(idDest != idServ){
@@ -28,9 +35,12 @@ RadioPacket::RadioPacket(PacketBuffer p, uint16_t idserv){
             broadcast = true;
         }
         dataSize = (buffer[6] << 8) | buffer[5];
+        // Vérification de la taille du buffer
         if(bufferSize!=9+dataSize){
             setErrorCode(-2);
         }
+
+        // Vérification de la taille des donnéées
         if (dataSize>=255){
             setErrorCode(-4);
         }
@@ -40,6 +50,7 @@ RadioPacket::RadioPacket(PacketBuffer p, uint16_t idserv){
         }
     }
     else{
+        // Erreur de taille de buffer
         setErrorCode(-1);
         return;
     }
@@ -89,6 +100,7 @@ void RadioPacket::setData(uint8_t *src, int size){
     dataSize = size;
 }
 
+// Méthode pour obtenir le buffer du paquet radio
 PacketBuffer RadioPacket::getPacketBuffer(){
     PacketBuffer pbuffer(bufferSize+dataSize);
     uint8_t * buffer = pbuffer.getBytes();
@@ -101,6 +113,7 @@ PacketBuffer RadioPacket::getPacketBuffer(){
     return pbuffer;
 }
 
+// Méthode pour gerer le message d'erreur
 ManagedString RadioPacket::getError(){
     switch (errornb)
     {

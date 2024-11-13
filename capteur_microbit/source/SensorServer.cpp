@@ -1,5 +1,6 @@
 #include "SensorServer.h"
 
+// Constructeur de la classe SensorServer
 SensorServer::SensorServer(MicroBit *ubit, MicroBitI2C *i2c, MicroBitPin *P0): SN(ubit->getSerial()){
     uBit = ubit;
     ID = 0;
@@ -8,17 +9,21 @@ SensorServer::SensorServer(MicroBit *ubit, MicroBitI2C *i2c, MicroBitPin *P0): S
     this->P0 = P0;
 }
 
+// Destructeur de la classe SensorServer
 SensorServer::~SensorServer(){
     free(sReader);
     free(display);
 }
 
+// Méthode pour initialiser le serveur
 void SensorServer::init(){
     uBit->radio.enable(); 
     sReader = new SensorReader(uBit, i2c, TEMPERATURE|LUX|IR|PRESSURE|HUMIDITY|UV);
     display  = new Display(uBit, i2c, P0);
     InitConnection();
 }
+
+// Méthode pour initialiser la connexion avec le serveur 
 void SensorServer::InitConnection(){
     if (state==0){
         display->setMessage("Initialisation connexion..");
@@ -30,6 +35,8 @@ void SensorServer::InitConnection(){
         }
     } 
 }
+
+// Méthode principale permet d'afficher les données sur l'écran et de les envoyer au serveur
 void SensorServer::run(){
   while(true){
         if(state == 1){
@@ -44,14 +51,17 @@ void SensorServer::run(){
     } 
 }
 
+// Méthode pour traiter les paquets reçus du serveur 
 void SensorServer::receivepacket(){
     RadioPacket p (uBit->radio.datagram.recv(), ID);
     //uBit->display.scroll("REC");
-    ManagedString str((char*)p.getData());
-    uBit->display.scroll(str);
+    /* ManagedString str((char*)p.getDest());
+    uBit->display.scroll(str); */
+
     if(!p.getErrorCode()){
         switch (p.getOpCode())
         {
+        // Initialisation de la connexion
         case 0:
             if(state==0){
                 uint8_t *data = p.getData();
@@ -75,12 +85,13 @@ void SensorServer::receivepacket(){
 
             }
             break;
+        //Mise à jour de l'ordre d'affichage suite à une demande de l'application traité par le serveur
         case 2 :
             if(state==1){
                 uint8_t *data = p.getData();
                 uint16_t size = p.getDataSize();
 
-                uBit->display.scroll(&data);
+                //uBit->display.scroll(&data);
 
                 sReader->setDisplayOrder(data,size);
                 state = 1;
@@ -90,11 +101,10 @@ void SensorServer::receivepacket(){
             break;
         }
     }
-    else{
-        uBit->display.scroll("ERR");
-        }
+
 }
 
+// Méthode pour envoyer les données au serveur
 void SensorServer::sendData(SensorData *sData){
     RadioPacket packet;
     //uBit->display.scroll(ID);

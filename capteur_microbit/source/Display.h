@@ -4,6 +4,7 @@
 #include "SensorData.h"
 #include "Common.h"
 
+// Définition de la classe Display pour gérer l'affichage sur un écran OLED SSD1306
 class Display{
     public:
         Display(MicroBit *ubit, MicroBitI2C *i2c, MicroBitPin *pin);

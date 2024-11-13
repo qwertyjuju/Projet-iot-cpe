@@ -6,6 +6,8 @@ SensorReader::SensorReader(MicroBit *ubit, MicroBitI2C *i2c,MeasureType type): t
 SensorReader::~SensorReader(){
     
 }
+
+// Methode pour lire et stocker les données des capteurs
 SensorData *SensorReader::read(){
     data.reset();
     data.init();
@@ -13,6 +15,8 @@ SensorData *SensorReader::read(){
     uint32_t lux = 0;
     uint16_t ir = 0, uv = 0;
     MeasureType measuredtypes = data.getTypes();
+
+    // Lecture des données des capteurs
     if(measuredtypes&(TEMPERATURE|PRESSURE|HUMIDITY)){
         uint32_t temp_p;
         int32_t temp_t;
@@ -29,6 +33,8 @@ SensorData *SensorReader::read(){
         uvSensor.sensor_read(&uv);
     }
     int j=0;
+
+    // Ajout des données dans le buffer
     for (int bit = 1; bit <= (int) MeasureType::UV; bit <<= 1)
     {
         switch((MeasureType) bit & measuredtypes){
@@ -67,7 +73,7 @@ SensorData *SensorReader::read(){
     return &data;
 }
 
-
+// Methode pour définir l'ordre d'affichage des données
 void SensorReader::setDisplayOrder(uint8_t* order, int size){
     data.setDisplayOrder(order, size);
 }
