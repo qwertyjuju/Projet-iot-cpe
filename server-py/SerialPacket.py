@@ -17,10 +17,9 @@ class SerialPacket:
                     measuretype  = int(buffer[i])
                     if measuretype == 1:
                         self.data["data"]["temp"]=int.from_bytes(buffer[i+1:i+4], "little", signed = True)
-                        print(self.data["data"]["temp"], buffer[i+1:i+4])
                         i+=5
                     if  measuretype == 2:
-                        self.data["data"]["press"]=int.from_bytes(buffer[i+1:i+4], "little")
+                        self.data["data"]["pres"]=int.from_bytes(buffer[i+1:i+4], "little")
                         i+=5
                     if  measuretype == 4:
                         self.data["data"]["hum"]=int.from_bytes(buffer[i+1:i+4], "little")
