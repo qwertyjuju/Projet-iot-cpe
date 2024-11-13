@@ -7,6 +7,9 @@ class EventSender(Enum):
     
 
 class Event:
+    """
+    Classe Event a envoyé aux differents threads
+    """
     def __init__(self, sender: EventSender, cmd=None, args=[], address = None):
         self.sender = sender
         self.cmd = cmd

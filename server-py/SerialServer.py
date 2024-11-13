@@ -43,11 +43,11 @@ class SerialServer(AppObject):
                 print(bytes)
                 packet: SerialPacket = SerialPacket(bytes)
                 opcode= packet.getOpCode()
-                if opcode == 0:
+                if opcode == 0: # si opcode == 0: récuperation/création du device dans la base de donnée et envoie de l'ID pour la communication
                     self.app.addEvent(Event(EventSender.SERIAL,"get-device", [packet.getData()["SNumber"], True]))
-                if opcode ==1:
+                if opcode ==1:  # si opcode == 1: décode les données et envoie dans la base de donnée
                     self.app.addEvent(Event(EventSender.SERIAL,"register-measure", [packet.getData()["IDsrc"], packet.getData()["data"], datetime.datetime.now()]))
-                if opcode ==255:
+                if opcode ==255: # si opcode == 2: log du message
                     self.app.addEvent(Event(EventSender.SERIAL,"log", [packet.getData()["msg"]]))
             except Exception as e:
                 self.app.log(f"error: {e}")
