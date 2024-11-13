@@ -27,7 +27,7 @@ class Application:
 
         def init(self):
                 self.udpserv = UDPServer.UDPServer("0.0.0.0", 10000)
-                self.serialserv = SerialServer.SerialServer("/dev/ttyACM0", 115200)
+                #self.serialserv = SerialServer.SerialServer("/dev/ttyACM0", 115200)
                 self.dbManager = DBManager.DBManager('data.db', 'script_bdd.sql')
                 self.commands = {
                         "get-device": self.dbManager.getDevice,
@@ -41,7 +41,7 @@ class Application:
 
         def run(self):
                 self.udpserv.run()
-                self.serialserv.run()
+                #self.serialserv.run()
                 while True:
                         event = self.q.get()
                         self.processEvent(event)
@@ -58,6 +58,7 @@ class Application:
                         command = event.getCmd()
                         args =event.getArgs()
                         sender = event.getSender()
+                        print(args)
                         if  command in self.commands:
                                 if args:
                                         event.setData(self.commands[command](*event.getArgs()))
