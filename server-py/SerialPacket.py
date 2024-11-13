@@ -1,12 +1,15 @@
 class SerialPacket:
+    """
+    classe pour un paquet reçu en sur le port serial
+    """
     def __init__(self, buffer: bytes=None):
         if buffer:
             self.buffer = buffer
             self.opcode = int(self.buffer[0])
             self.size =len(buffer)
             self.data ={}
-            if self.opcode == 0:
-                self.data["SNumber"]= buffer[1:].decode()
+            if self.opcode == 0: 
+                self.data["SNumber"]= buffer[1:].decode() 
             if self.opcode == 255:
                 self.data["msg"] = buffer[1:].decode()
             if self.opcode == 1:

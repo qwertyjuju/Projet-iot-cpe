@@ -3,6 +3,10 @@
 //#include <openssl/aes.h>
 
 class RadioPacket{
+    /*
+    Classe pour un paquet envoyé en Radio. en reception, on utilise directement le constructeur avec un packetBuffer,
+    En envoi, le paquet est initialisé pour un envoit d'initialisation.
+    */
     public: 
         RadioPacket();
         RadioPacket(PacketBuffer p, uint16_t idserv);

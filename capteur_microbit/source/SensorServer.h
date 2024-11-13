@@ -4,6 +4,8 @@
 #include "SensorReader.h"
 #include "SensorData.h"
 #include "Display.h"
+
+// Classe SensorServer pour gérer les communications avec le serveur
 class SensorServer{
     public :
         SensorServer(MicroBit* ubit, MicroBitI2C *i2c, MicroBitPin *P0);

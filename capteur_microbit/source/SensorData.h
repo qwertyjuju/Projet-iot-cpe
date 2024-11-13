@@ -2,6 +2,7 @@
 #include "MicroBit.h"
 #include "Common.h"
 
+
 class SensorData{
     public:
         SensorData(MeasureType type);
@@ -21,8 +22,8 @@ class SensorData{
         
         
     private:
-        uint8_t *buffer;
+        uint8_t *buffer; // buffer pour stocker les données
         uint16_t buffersize;
-        MeasureType measuredtypes;
-        uint8_t order[6]={0};
+        MeasureType measuredtypes; // type de mesures stockées
+        uint8_t order[6]={0}; // ordre d'affichage des mesures
 };
