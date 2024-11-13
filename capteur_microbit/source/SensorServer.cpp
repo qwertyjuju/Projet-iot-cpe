@@ -79,9 +79,6 @@ void SensorServer::receivepacket(){
             if(state==1){
                 uint8_t *data = p.getData();
                 uint16_t size = p.getDataSize();
-
-                uBit->display.scroll(&data);
-
                 sReader->setDisplayOrder(data,size);
                 state = 1;
             }

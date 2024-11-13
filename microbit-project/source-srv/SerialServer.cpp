@@ -16,7 +16,6 @@ void SerialServer::init(RadioServer *serv){
 
 void SerialServer::receiveData(){
     ManagedString ms = uBit->serial.readUntil("\r\n");
-    uBit->display.scroll(ms);
     SerialPacket p((uint8_t*)ms.toCharArray(), ms.length());
     if(!p.getErrorCode()){
         radioServer->processSerialPacket(&p);
