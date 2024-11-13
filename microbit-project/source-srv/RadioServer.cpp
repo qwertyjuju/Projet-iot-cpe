@@ -12,7 +12,7 @@ RadioServer::~RadioServer(){
 void RadioServer::run(){
     while(1){
         serialServer->receiveData();
-        uBit->sleep(3000);
+        //uBit->sleep(3000);
     }
 }
 
@@ -87,12 +87,13 @@ void RadioServer::processSerialPacket(SerialPacket *p){
             break;
         case 2:
             uint16_t dest;
-            memcpy(&dest, &p->getData()[p->getDataSize()-2], sizeof(uint16_t));
+            memcpy(&dest, p->getData(), sizeof(uint16_t));
             uBit->display.scroll(dest);
             rp.setSource(ID);
             rp.setDest(dest);
             rp.setOpCode(p->getOpCode());
             rp.setData(p->getData(), p->getDataSize()-2);
+            uBit->radio.datagram.send(rp.getPacketBuffer());
             break;
     }
 

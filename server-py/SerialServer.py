@@ -59,7 +59,7 @@ class SerialServer(AppObject):
                 if self.ser.isOpen():
                     sendmsg= msg.getBuffer()+"\r\n"
                     self.ser.write(sendmsg.encode())
-                self.app.addEvent(Event(EventSender.SERIAL,"log", ["Message <" + str(sendmsg) + "> sent to micro-controller." ]))
+                self.app.addEvent(Event(EventSender.SERIAL,"log", ["Message <" + str(sendmsg.encode()) + "> sent to micro-controller." ]))
             except Exception as e:
                 self.app.addEvent(Event(EventSender.SERIAL,"log", [e]))
 

@@ -46,7 +46,7 @@ class SerialPacket:
         self.buffer += str(i)
 
     def getBuffer(self):
-        self.buffer =str(self.opcode) +self.buffer
+        self.buffer =str(self.opcode)+self.buffer
         return self.buffer
 
 

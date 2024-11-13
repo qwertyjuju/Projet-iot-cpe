@@ -59,10 +59,10 @@ class DBManager(AppObject):
     def getMeasure(self, device_id):
         self.cursor.execute("SELECT data, measure_timestamp FROM measure JOIN device WHERE device = (?) ORDER BY measure_timestamp DESC LIMIT 1", (device_id))
         measure = self.cursor.fetchall()
-        
         return json.dumps(measure)
 
     def setOrder(self, device_id, order):
-        self.cursor.execute("UPDATE orders SET displayorder = (?) WHERE id = (?)", (order, device_id))
+        self.cursor.execute("UPDATE Device SET displayorder = (?) WHERE id = (?)", (order, device_id))
         self.conn.commit()
+
 
