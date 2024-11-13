@@ -23,32 +23,13 @@ class DBManager(AppObject):
                 pass
         res = self.cursor.execute("SELECT * FROM Device WHERE serialNumber = (?)", [snNumber]).fetchall()
         return res[0]
-        
-    def store_data_in_db(self, data):
-        try:
-            # Extraire les informations spécifiques
-            opcode = data["opcode"]
-            id_source = data["id_source"]
-            data_capteur = data["data_capteur"]
-            if opcode == 0:
-                if id_source:
-                    self.cursor.execute("INSERT OR IGNORE INTO device (id_source) VALUES (?)", (id_source,))
-                    self.conn.commit()
-                if opcode and id_source and data_capteur:
-                    self.cursor.execute("INSERT INTO data (opcode, id_source, data_capteur) VALUES (?, ?, ?)",(opcode, id_source, data_capteur))
-                    self.conn.commit()
-                    print("Data successfully stored in database.")
-                else:
-                    print("Some fields are missing in the received JSON data.")
-        except sqlite3.Error as e:
-            print("Error storing data:", e)
+    
 
     def registerMeasure(self, devID, data, time):
         self.cursor.execute("INSERT INTO Mesure (device_id, measure_timestamp, data) VALUES (?, ?, ?)", [devID, time, json.dumps(data)])
         self.conn.commit()
         
     def getDevices(self):
-        #TODO decoment when test ends and return devices
         self.cursor.execute("SELECT serialNumber FROM Device")
         result = self.cursor.fetchall()
     

@@ -27,6 +27,9 @@ class SerialServer(AppObject):
             print(f"Serial {port} port not available: {e}")
             exit()
 
+    """
+    Le manager serie gère 2 threads: un pour la lecture et un pour l'ecriture sur le port serie
+    """
     def run(self):
         rthread = threading.Thread(target =self._run_read)
         rthread.daemon = True

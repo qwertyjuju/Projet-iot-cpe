@@ -8,10 +8,26 @@ class RadioPacket{
     En envoi, le paquet est initialisé pour un envoit d'initialisation.
     */
     public: 
+
+        /*
+        *   Constructeur par défaut pour l'envoi d'un paquet
+        */
         RadioPacket();
+        /*
+        *   Constructeur pour la reception d'un paquet. genère une erreur si la destination n'est pas égale à idserv
+        */
         RadioPacket(PacketBuffer p, uint16_t idserv);
         ~RadioPacket();
+
+        /*
+        *   Retourne le numéro d'erreur si il y en a une
+        */
         int getErrorCode();
+
+
+        /*
+        *   Retourne un message d'erreur en fonction du numéro d'erreur
+        */
         ManagedString getError();
 
         // Getters

@@ -2,7 +2,6 @@
 
 SerialServer::SerialServer(MicroBit *ubit){
     uBit = ubit;
-    //uBit->serial.eventOn("EOT\n");
 }
 
 SerialServer::~SerialServer(){

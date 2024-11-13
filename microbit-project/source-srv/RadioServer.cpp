@@ -12,7 +12,6 @@ RadioServer::~RadioServer(){
 void RadioServer::run(){
     while(1){
         serialServer->receiveData();
-        //uBit->sleep(3000);
     }
 }
 
@@ -48,30 +47,7 @@ void RadioServer::receivePacket(){
     else{
         serialServer->sendMessage(p.getError());
     }
-    /*
-    uint16_t src =0x0001;
-    uint8_t buffer[16]={0};
-    char test[4]= {'L', 'U', 'T', 'H'};
-    if(!rp.getErrorCode()){
-        switch(rp.getOpCode()){
-            case 0:
-                serialServer->sendMessage(rp.getSource());
-                resp.setSource(ID);
-                resp.setDest(0);
-                memcpy(buffer, (uint8_t*)rp.getData(), 10);
-                memcpy(&buffer[10], (uint8_t*)&src, 2);
-                memcpy(&buffer[12], (uint8_t*)test, 4);
-                resp.setData(buffer, 16);
-                uBit->radio.datagram.send(resp.getPacketBuffer());
-                break;
-            case 1:
-                serialServer->sendMessage(rp.getSource());
-                break;
-        }
-    }
-    else{
-        serialServer->sendMessage(rp.getError());
-    }*/
+
 }
 
 void RadioServer::processSerialPacket(SerialPacket *p){

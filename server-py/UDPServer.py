@@ -27,14 +27,6 @@ class ThreadedUDPRequestHandler(socketserver.BaseRequestHandler):
                     server.app.addEvent(Event(EventSender.UDP, data["cmd"], data["args"], self.client_address))
             except Exception as e:
                 print(e)
-        #if data != "":
-        #if data in MICRO_COMMANDS: # Send message through UART
-        #       sendUARTMessage(data)
-        #elif data == "getValues()": # Sent last value received from micro-controller
-        #        socket.sendto("", self.client_address) 
-        # TODO: Create last_values_received as global variable      
-        #else:
-        #        print("Unknown message: ",data)
 
 class UDPServer(socketserver.ThreadingMixIn, socketserver.UDPServer, AppObject):
     def __init__(self, host,port):

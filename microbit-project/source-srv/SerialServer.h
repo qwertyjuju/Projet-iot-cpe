@@ -24,6 +24,11 @@ class SerialServer{
         *   Fonction a appelé pour la reception des donnée sur le port série
         */
         void receiveData();
+
+        /*
+        *
+        *   Fonction d'envoi d'un paquet sur le port serie
+        */
         void sendPacket(SerialPacket *p);
 
     private:

@@ -15,10 +15,10 @@ void onSerialDataReceive(MicroBitEvent){
 
 int main()
 {
-    uBit.init();
-    uBit.messageBus.listen(MICROBIT_ID_RADIO, MICROBIT_RADIO_EVT_DATAGRAM, onRadioDataReceive);
+    uBit.init();    //  initialisation microbit
+    uBit.messageBus.listen(MICROBIT_ID_RADIO, MICROBIT_RADIO_EVT_DATAGRAM, onRadioDataReceive);// appel de la methode receivePacket du serveur lors de la reception d'un message radion
     uBit.radio.enable();
-    rserv.init(&sserv);
-    sserv.init(&rserv);
-    rserv.run();
+    rserv.init(&sserv);//   Initialisation serveur radio
+    sserv.init(&rserv);// Initialisation serveur serie
+    rserv.run();// Boucle de lecture serie
 }
