@@ -56,6 +56,11 @@ class Application:
         def addEvent(self, event: Event):
                 self.q.put(event)
 
+        """
+        Lorsqu'un event est reçu, la commande demandé est executé. une fois la commande réalisé, l'event est renvoyé soit au gestionnaire serie,
+        soit au serveur UDP.
+        """
+
         def processEvent(self, event: Event):
                 try:
                         command = event.getCmd()

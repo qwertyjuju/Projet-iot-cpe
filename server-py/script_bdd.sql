@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS Device (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT,
     serialNumber TEXT NOT NULL UNIQUE,
-    displayorder TEXT NOT NULL DEFAULT "BITE"
+    displayorder TEXT NOT NULL DEFAULT "TLH"
 );
 
 
@@ -15,3 +15,4 @@ CREATE TABLE IF NOT EXISTS Mesure (
 );
 
 UPDATE SQLITE_SEQUENCE SET seq = 1 WHERE name = 'Device'
+
