@@ -15,6 +15,7 @@ import com.irc.proj_archi_iot.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
+    // Binding de l'activité
     private ActivityMainBinding binding;
 
     @Override
@@ -29,13 +30,20 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        // Initialisation de l'UI
         initUI();
     }
 
+    /**
+     * Initialise l'UI et associe les éléments de navigation.
+     */
     private void initUI() {
         initNavMenu();
     }
 
+    /**
+     * Initialise le menu de navigation.
+     */
     private void initNavMenu() {
         replaceFragment(HomeFragment.newInstance());
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
@@ -52,6 +60,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Remplace le fragment actuel par le fragment spécifié.
+     *
+     * @param fragment
+     */
     private void replaceFragment(Fragment fragment) {
         getSupportFragmentManager()
             .beginTransaction()

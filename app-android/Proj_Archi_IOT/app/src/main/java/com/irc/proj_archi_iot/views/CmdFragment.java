@@ -27,11 +27,6 @@ import java.util.List;
  */
 public class CmdFragment extends Fragment {
 
-    private EditText fieldDeviceId;
-    private Spinner spnTemperature, spnLuminosity, spnPressure, spnHumidity;
-    private TextView textTemperature, textLuminosity, textPressure, textHumidity;
-    private Button btnSetOrder, btnGetMeasurements;
-
     private LinearLayout spnContainer;
     private Spinner deviceIdsSpinner;
 
@@ -39,41 +34,47 @@ public class CmdFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @return A new instance of fragment CmdFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static CmdFragment newInstance() {
         return new CmdFragment();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // Inflation du layout du fragment
         View view = inflater.inflate(R.layout.fragment_cmd, container, false);
 
+        // Initialisation des éléments de l'UI
         spnContainer = view.findViewById(R.id.spinner_container);
         deviceIdsSpinner = view.findViewById(R.id.spn_device_id);
 
+        // Remplissage du spinner avec les ID des appareils
         populateDeviceIdSpinner(view);
 
+        // Ajout des spinners de sélection d'ordre des mesures
         for (int i = 0; i < 4; i++) {
             addMeasurementSpinner(i);
         }
 
-        Button btn = view.findViewById(R.id.btn_send_order);
-        btn.setOnClickListener(v -> {
+        // Gestionnaire d'événement pour le bouton d'envoi de l'ordre
+        view.findViewById(R.id.btn_send_order).setOnClickListener(v -> {
+            // Récupération de l'ID de l'appareil sélectionnée
             String selectedDeviceId = deviceIdsSpinner.getSelectedItem().toString();
+
+            // Récupération des valeurs des spinners
             String code = retrieveSpinnerValues();
 
+            // Envoi de l'ordre au serveur
             CommandHandler.getInstance().setOrder(selectedDeviceId, code);
         });
 
         return view;
     }
 
+    /**
+     * Remplit le spinner avec les ID des appareils disponibles.
+     *
+     * @param view Vue du fragment
+     */
     private void populateDeviceIdSpinner(View view) {
         List<String> deviceIds = MeasureRepository.getInstance().getDeviceIds();
         for (String deviceId : deviceIds) CommandHandler.getInstance().getMeasures(deviceId);
@@ -89,18 +90,28 @@ public class CmdFragment extends Fragment {
     }
 
     private void addMeasurementSpinner(int i) {
+        // Création de la vue du spinner
         View spinner = LayoutInflater.from(getContext()).inflate(R.layout.position_spinner, spnContainer, false);
 
+        // Attribution des valeurs aux éléments du spinner
         ((TextView)spinner.findViewById(R.id.tv_index)).setText(String.valueOf(i+1));
         ((Spinner)spinner.findViewById(R.id.spn_measure)).setSelection(i);
-        ((Spinner)spinner.findViewById(R.id.spn_measure)).setId(i);
+        spinner.findViewById(R.id.spn_measure).setId(i);
 
+        // Ajout du spinner au conteneur
         spnContainer.addView(spinner);
     }
 
+    /**
+     * Récupère les valeurs sélectionnées dans les spinners et les concatène en une chaîne de caractères.
+     *
+     * @return Chaîne de caractères contenant l'ordre d'affichage des mesures.
+     */
     private String retrieveSpinnerValues() {
         int count = spnContainer.getChildCount();
         Character[] code = new Character[4];
+
+        // Pour chaque spinner, récupération de la valeur sélectionnée et ajout de l'initiale de la mesure à la chaîne de caractères.
         for (int i = 0; i < count; i++) {
             View spinnerView = spnContainer.getChildAt(i);
             Spinner spinner = spinnerView.findViewById(i);

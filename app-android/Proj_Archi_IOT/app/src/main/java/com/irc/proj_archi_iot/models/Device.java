@@ -3,6 +3,9 @@ package com.irc.proj_archi_iot.models;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Modèle pour représenter un périphérique IoT
+ */
 public class Device {
     public final String id;
     public final String name;
