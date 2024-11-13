@@ -3,6 +3,10 @@ import sqlite3
 from AppObject import AppObject
 
 class DBManager(AppObject):
+
+    """
+    classe pour la gestion des données dans la base de données
+    """
     def __init__(self, dbname, initsqlfile):
         self.conn = sqlite3.connect(dbname)
         self.cursor = self.conn.cursor()

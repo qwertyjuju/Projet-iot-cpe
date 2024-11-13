@@ -88,7 +88,6 @@ void RadioServer::processSerialPacket(SerialPacket *p){
         case 2:
             uint16_t dest;
             memcpy(&dest, p->getData(), sizeof(uint16_t));
-            uBit->display.scroll(dest);
             rp.setSource(ID);
             rp.setDest(dest);
             rp.setOpCode(p->getOpCode());
