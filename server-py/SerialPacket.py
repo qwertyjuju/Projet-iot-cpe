@@ -1,12 +1,15 @@
 class SerialPacket:
+    """
+    classe pour un paquet reçu en sur le port serial
+    """
     def __init__(self, buffer: bytes=None):
         if buffer:
             self.buffer = buffer
             self.opcode = int(self.buffer[0])
             self.size =len(buffer)
             self.data ={}
-            if self.opcode == 0:
-                self.data["SNumber"]= buffer[1:].decode()
+            if self.opcode == 0: 
+                self.data["SNumber"]= buffer[1:].decode() 
             if self.opcode == 255:
                 self.data["msg"] = buffer[1:].decode()
             if self.opcode == 1:
@@ -17,10 +20,9 @@ class SerialPacket:
                     measuretype  = int(buffer[i])
                     if measuretype == 1:
                         self.data["data"]["temp"]=int.from_bytes(buffer[i+1:i+4], "little", signed = True)
-                        print(self.data["data"]["temp"], buffer[i+1:i+4])
                         i+=5
                     if  measuretype == 2:
-                        self.data["data"]["press"]=int.from_bytes(buffer[i+1:i+4], "little")
+                        self.data["data"]["pres"]=int.from_bytes(buffer[i+1:i+4], "little")
                         i+=5
                     if  measuretype == 4:
                         self.data["data"]["hum"]=int.from_bytes(buffer[i+1:i+4], "little")
@@ -46,7 +48,7 @@ class SerialPacket:
         self.buffer += str(i)
 
     def getBuffer(self):
-        self.buffer =str(self.opcode) +self.buffer
+        self.buffer =str(self.opcode)+self.buffer
         return self.buffer
 
 

@@ -7,6 +7,7 @@ import DBManager
 from  AppObject import AppObject
 import queue
 from Event import EventSender, Event
+from SerialPacket import SerialPacket
 
 def main():
         app = Application()
@@ -34,7 +35,7 @@ class Application:
                         "get-measures": self.dbManager.getMeasures,
                         "get-measure": self.dbManager.getMeasure,
                         "register-measure": self.dbManager.registerMeasure,
-                        "set-order": self.dbManager.setOrder,
+                        "set-order": self.setOrder,
                         "log": self.log,
                 }
 
@@ -57,6 +58,7 @@ class Application:
                         command = event.getCmd()
                         args =event.getArgs()
                         sender = event.getSender()
+                        print(args)
                         if  command in self.commands:
                                 if args:
                                         event.setData(self.commands[command](*event.getArgs()))
@@ -71,6 +73,19 @@ class Application:
                                 self.udpserv.finishEvent(event)
                 except Exception as e:
                         self.log(e)
+
+        def setOrder(self, deviceId, order):
+                self.dbManager.setOrder(deviceId, order)
+                p :SerialPacket = SerialPacket()
+                p.setOpCode(2)
+                p.appendBuffer(order)
+                deviceId =int(deviceId)
+                high_byte = (deviceId >> 8) & 0xFF 
+                low_byte = deviceId & 0xFF 
+                p.appendBuffer(chr(high_byte))
+                p.appendBuffer(chr(low_byte))
+                self.serialserv.send(p)
+
 
         def log(self, msg):
                 print(msg)

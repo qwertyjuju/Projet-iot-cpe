@@ -7,6 +7,7 @@
 #include "incl/tsl256x.h"
 #include "incl/veml6070.h"
 
+// Classe SensorReader pour lire les données des capteurs
 class SensorReader{
     public:  
         SensorReader(MicroBit *ubit, MicroBitI2C *i2c,MeasureType type);

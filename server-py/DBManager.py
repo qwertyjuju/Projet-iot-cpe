@@ -3,6 +3,10 @@ import sqlite3
 from AppObject import AppObject
 
 class DBManager(AppObject):
+
+    """
+    classe pour la gestion des données dans la base de données
+    """
     def __init__(self, dbname, initsqlfile):
         self.conn = sqlite3.connect(dbname)
         self.cursor = self.conn.cursor()
@@ -45,24 +49,35 @@ class DBManager(AppObject):
         
     def getDevices(self):
         #TODO decoment when test ends and return devices
-        self.cursor.execute("SELECT serialNumber FROM device")
-        devices = self.cursor.fetchall()
+        self.cursor.execute("SELECT serialNumber FROM Device")
+        result = self.cursor.fetchall()
     
-        return json.dumps(devices)
+        args = [row[0] for row in result]
+        command = {"cmd":"set-devices","args":args}
+
+        return json.dumps(command)
     
     def getMeasures(self, device_id):
-        self.cursor.execute("SELECT data, measure_timestamp FROM measure JOIN device WHERE device = (?)", (device_id))
-        measure = self.cursor.fetchall()
+        self.cursor.execute(f"SELECT data, measure_timestamp FROM mesure JOIN Device WHERE serialNumber = {device_id}, ORDER BY measure_timestamp DESC LIMIT 20")
+        result = self.cursor.fetchall()
 
-        return json.dumps(measure)
+        measures = [row[0] for row in result]
+
+        args =[{"device_id":device_id, "measures":measures}]
+        command = {"cmd":"set-measures","args":args}
+
+        return json.dumps(command)
 
     def getMeasure(self, device_id):
-        self.cursor.execute("SELECT data, measure_timestamp FROM measure JOIN device WHERE device = (?) ORDER BY measure_timestamp DESC LIMIT 1", (device_id))
-        measure = self.cursor.fetchall()
-        
-        return json.dumps(measure)
+        self.cursor.execute(f"SELECT data, measure_timestamp FROM mesure JOIN Device WHERE serialNumber = {device_id} ORDER BY measure_timestamp DESC LIMIT 1")
+        result = self.cursor.fetchall()
+
+        args = [{"device_id":device_id, "last_measure":json.loads(result[0])} for result in result]
+        command = {"cmd":"set-measure","args":args}
+
+        return json.dumps(command)
 
     def setOrder(self, device_id, order):
-        self.cursor.execute("UPDATE orders SET displayorder = (?) WHERE id = (?)", (order, device_id))
+        self.cursor.execute(f"UPDATE Device SET displayorder = {order} WHERE id = {device_id}")
         self.conn.commit()
 
