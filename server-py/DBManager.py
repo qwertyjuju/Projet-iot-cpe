@@ -58,7 +58,7 @@ class DBManager(AppObject):
         return json.dumps(command)
     
     def getMeasures(self, device_id):
-        self.cursor.execute(f"SELECT data, measure_timestamp FROM mesure JOIN Device WHERE serialNumber = {device_id}")
+        self.cursor.execute(f"SELECT data, measure_timestamp FROM mesure JOIN Device WHERE serialNumber = {device_id}, ORDER BY measure_timestamp DESC LIMIT 20")
         result = self.cursor.fetchall()
 
         measures = [row[0] for row in result]
@@ -71,11 +71,8 @@ class DBManager(AppObject):
     def getMeasure(self, device_id):
         self.cursor.execute(f"SELECT data, measure_timestamp FROM mesure JOIN Device WHERE serialNumber = {device_id} ORDER BY measure_timestamp DESC LIMIT 1")
         result = self.cursor.fetchall()
-        print(result)
-        print(type(result))
 
         args = [{"device_id":device_id, "last_measure":json.loads(result[0])} for result in result]
-        print(args)
         command = {"cmd":"set-measure","args":args}
 
         return json.dumps(command)
