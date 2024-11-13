@@ -48,24 +48,33 @@ class DBManager(AppObject):
         self.cursor.execute("SELECT serialNumber FROM Device")
         result = self.cursor.fetchall()
     
-        device_ids = [row[0] for row in result]
-        command = {"cmd":"set-devices","args":device_ids}
+        args = [row[0] for row in result]
+        command = {"cmd":"set-devices","args":args}
 
         return json.dumps(command)
     
     def getMeasures(self, device_id):
-        print(device_id)
         self.cursor.execute(f"SELECT data, measure_timestamp FROM mesure JOIN Device WHERE serialNumber = {device_id}")
-        measure = self.cursor.fetchall()
+        result = self.cursor.fetchall()
 
-        return json.dumps(measure)
+        measures = [row[0] for row in result]
+
+        args =[{"device_id":device_id, "measures":measures}]
+        command = {"cmd":"set-measures","args":args}
+
+        return json.dumps(command)
 
     def getMeasure(self, device_id):
-        print(device_id)
-        print(type(device_id))
         self.cursor.execute(f"SELECT data, measure_timestamp FROM mesure JOIN Device WHERE serialNumber = {device_id} ORDER BY measure_timestamp DESC LIMIT 1")
-        measure = self.cursor.fetchall()
-        return json.dumps(measure)
+        result = self.cursor.fetchall()
+        print(result)
+        print(type(result))
+
+        args = [{"device_id":device_id, "last_measure":json.loads(result[0])} for result in result]
+        print(args)
+        command = {"cmd":"set-measure","args":args}
+
+        return json.dumps(command)
 
     def setOrder(self, device_id, order):
         self.cursor.execute(f"UPDATE Device SET displayorder = {order} WHERE id = {device_id}")

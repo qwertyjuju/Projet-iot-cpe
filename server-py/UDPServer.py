@@ -52,7 +52,7 @@ class UDPServer(socketserver.ThreadingMixIn, socketserver.UDPServer, AppObject):
 
     def send(self, data, address):
         print(f"sending, client: {address}, data: {data}")
-        self.socket.sendto(data.encode('utf-8'), address)
+        self.socket.sendto(data.replace("'", '"').encode('utf-8'), address)
 
     def run(self):
         self.server_thread.start()
